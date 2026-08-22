@@ -8,9 +8,13 @@ import {
   Search, Filter, MapPin, Star, DollarSign, TrendingUp,
   Globe, X, Plus, Heart, ChevronDown
 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { mockCities } from '@/lib/mockData';
-import type { CityMeta, Region, CostTier } from '@/types';
+import { useItineraryStore } from '@/store/useItineraryStore';
+import { useAuthStore } from '@/store/useAuthStore';
 import { useGlobeStore } from '@/store/useGlobeStore';
+import { generateItineraryForCity } from '@/lib/itineraryGenerator';
+import type { CityMeta, Region, CostTier } from '@/types';
 
 const regions: Region[] = ['Asia', 'Europe', 'Americas', 'Africa', 'Oceania', 'Middle East'];
 const costTiers: CostTier[] = ['budget', 'mid-range', 'luxury'];
@@ -138,12 +142,22 @@ export default function CitySearchPage() {
     return matchSearch && matchRegion && matchTier;
   });
 
+  const router = useRouter();
   const openGlobe = useGlobeStore((s) => s.openGlobe);
+  const { addTrip } = useItineraryStore();
+  const { user } = useAuthStore();
 
   const handleAdd = (city: CityMeta) => {
+    // Generate full itinerary for the destination
+    const newTrip = generateItineraryForCity(city, { userId: user?.id });
+    addTrip(newTrip);
+
+    // Trigger globe animation and navigate to the trip itinerary
     openGlobe(city.lat ?? 35.6762, city.lng ?? 139.6503, city.name);
-    setAddedToast(`${city.name} locked on globe!`);
-    setTimeout(() => setAddedToast(null), 2500);
+    setAddedToast(`Generated itinerary for ${city.name}!`);
+    setTimeout(() => {
+      router.push(`/trips/${newTrip.id}`);
+    }, 1500);
   };
 
   const handleSave = (id: string) => {

@@ -12,6 +12,7 @@ import {
 import { useItineraryStore } from '@/store/useItineraryStore';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useGlobeStore } from '@/store/useGlobeStore';
+import { generateItineraryForNewTrip } from '@/lib/itineraryGenerator';
 import type { Trip } from '@/types';
 
 const coverOptions = [
@@ -70,7 +71,7 @@ export default function NewTripPage() {
   const [globeCoords, setGlobeCoords] = useState({ lat: 0, lng: 0 });
 
   const handleCreate = async () => {
-    // Generate some coordinates based on the trip name for the simulation
+    // Generate coordinates based on the trip name for the globe simulation
     let lat = 48.8566; // Paris default
     let lng = 2.3522;
     const search = form.name.toLowerCase();
@@ -83,37 +84,35 @@ export default function NewTripPage() {
       lat = 51.5074; lng = -0.1278;
     } else if (search.includes('sydney')) {
       lat = -33.8688; lng = 151.2093;
+    } else if (search.includes('rome') || search.includes('italy')) {
+      lat = 41.9028; lng = 12.4964;
+    } else if (search.includes('bali')) {
+      lat = -8.4095; lng = 115.1889;
     }
 
     setGlobeCoords({ lat, lng });
     setShowGlobe(true);
 
-    const newTrip: Trip & { startDate?: string; endDate?: string } = {
-      id: `trip-${Date.now()}`,
+    // Automatically generate full structured itinerary with stops and activities
+    const newTrip = generateItineraryForNewTrip({
       name: form.name,
       description: form.description,
-      coverPhoto: form.coverPhoto,
-      stops: [],
-      budget: form.budget,
-      budgetBreakdown: { transport: 0, stay: 0, activities: 0, meals: 0, misc: 0 },
-      isPublic: form.isPublic,
-      status: 'draft',
-      userId: user?.id ?? 'user-1',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      shareSlug: form.name.toLowerCase().replace(/\s+/g, '-') + '-' + Date.now(),
-      tags: [],
       startDate: form.startDate,
       endDate: form.endDate,
-    };
+      budget: form.budget,
+      coverPhoto: form.coverPhoto,
+      userId: user?.id,
+      isPublic: form.isPublic,
+    });
+
     addTrip(newTrip);
 
     // Trigger global antigravity globe overlay
     openGlobe(lat, lng, form.name);
 
     setTimeout(() => {
-      router.push(`/trips/${newTrip.id}/builder`);
-    }, 4500);
+      router.push(`/trips/${newTrip.id}`);
+    }, 4000);
   };
 
   return (
