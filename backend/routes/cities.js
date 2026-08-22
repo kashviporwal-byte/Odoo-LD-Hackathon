@@ -150,6 +150,69 @@ router.get('/:id', async (req, res, next) => {
 });
 
 /**
+ * @route   GET /api/cities/:cityId/activities
+ * @desc    Get filtered activities for a specific city (Direct City Route)
+ * @access  Private (Person B)
+ */
+router.get('/:cityId/activities', async (req, res, next) => {
+  const { cityId } = req.params;
+  const { type = '', maxCost, maxDuration, search = '' } = req.query;
+
+  try {
+    const conditions = ['city_id = $1'];
+    const params = [parseInt(cityId, 10)];
+    let paramIndex = 2;
+
+    if (type.trim()) {
+      conditions.push(`type ILIKE $${paramIndex}`);
+      params.push(type.trim());
+      paramIndex++;
+    }
+
+    if (maxCost !== undefined && maxCost !== '') {
+      conditions.push(`cost <= $${paramIndex}`);
+      params.push(parseFloat(maxCost));
+      paramIndex++;
+    }
+
+    if (maxDuration !== undefined && maxDuration !== '') {
+      conditions.push(`duration <= $${paramIndex}`);
+      params.push(parseInt(maxDuration, 10));
+      paramIndex++;
+    }
+
+    if (search.trim()) {
+      conditions.push(`(name ILIKE $${paramIndex} OR description ILIKE $${paramIndex})`);
+      params.push(`%${search.trim()}%`);
+      paramIndex++;
+    }
+
+    const whereClause = `WHERE ${conditions.join(' AND ')}`;
+    const sql = `
+      SELECT id, city_id, name, type, cost, duration, description, image_url
+      FROM activities
+      ${whereClause}
+      ORDER BY cost ASC, name ASC
+    `;
+
+    const result = await db.query(sql, params);
+
+    const formatted = result.rows.map((a) => ({
+      ...a,
+      cost: parseFloat(a.cost),
+      duration: parseInt(a.duration, 10),
+    }));
+
+    res.status(200).json({
+      success: true,
+      data: formatted,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
  * @route   POST /api/cities/seed
  * @desc    Seeding script trigger endpoint using OSM Nominatim API
  * @access  Private (Person B)
