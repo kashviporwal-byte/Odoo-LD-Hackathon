@@ -69,9 +69,45 @@ const PublicItinerary = () => {
         )}
       </div>
 
-      <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-        <h2 className="text-lg font-bold text-gray-900 mb-4">Read-Only Day Schedule</h2>
-        <p className="text-sm text-gray-500">Interactive maps and locations view.</p>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2 space-y-6">
+          <h2 className="text-lg font-bold text-gray-900 mb-4">Read-Only Day Schedule</h2>
+          {!tripData?.itinerary?.days || tripData.itinerary.days.length === 0 ? (
+            <p className="text-gray-500 text-sm">No activities scheduled on this trip.</p>
+          ) : (
+            <div className="space-y-6">
+              {tripData.itinerary.days.map((day, dIdx) => (
+                <div key={dIdx} className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+                  <div className="bg-gray-50 px-4 py-3 border-b border-gray-200">
+                    <h3 className="font-bold text-gray-800">
+                      Day {dIdx + 1}: {day.city} ({day.date})
+                    </h3>
+                  </div>
+                  <div className="p-4 divide-y divide-gray-100">
+                    {day.activities.map((act) => (
+                      <div key={act.id} className="py-3 flex justify-between items-center first:pt-0 last:pb-0">
+                        <div>
+                          <span className="text-xs font-semibold text-gray-400 block">{act.time}</span>
+                          <span className="font-semibold text-gray-800">{act.name}</span>
+                        </div>
+                        <span className="text-sm font-bold text-gray-900">${act.cost}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Info card display */}
+        <div className="space-y-4">
+          <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+            <h3 className="font-bold text-gray-900 mb-2">About this Trip</h3>
+            <p className="text-sm text-gray-600 mb-4">{tripData?.trip?.description || 'No description provided.'}</p>
+            <span className="text-xs text-gray-400">📅 Travel dates: {tripData?.trip?.start_date} to {tripData?.trip?.end_date}</span>
+          </div>
+        </div>
       </div>
     </div>
   );
