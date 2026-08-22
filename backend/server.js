@@ -3,8 +3,8 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
-const apiRoutes = require('./src/routes');
-const errorHandler = require('./src/middleware/errorMiddleware');
+const apiRoutes = require('./routes');
+const errorHandler = require('./middleware/errorMiddleware');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -18,6 +18,17 @@ app.use(express.json());
 if (process.env.NODE_ENV !== 'production') {
   app.use(morgan('dev'));
 }
+
+// Root landing message
+app.get('/', (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'GlobeTrotter Backend API Server is running!',
+    healthCheck: '/health',
+    apiDocumentation: '/api',
+    frontendWebApp: 'http://localhost:3000',
+  });
+});
 
 // Health check endpoint
 app.get('/health', (req, res) => {

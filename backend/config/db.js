@@ -25,7 +25,15 @@ try {
 let memoryDBInitialized = false;
 let memoryDB = {
   users: [
-    { id: 999, name: 'Demo Traveler', email: 'traveler@odoo.com', password_hash: '', role: 'user' },
+    {
+      id: 999,
+      name: 'Demo Traveler',
+      email: 'traveler@odoo.com',
+      password_hash: '$2a$10$oA1Z7Z2mF8zYj9K6N8e3/eA1j2k3l4m5n6o7p8q9r0s1t2u3v4w5x',
+      role: 'user',
+      is_active: true,
+      language: 'en'
+    },
   ],
   trips: [
     {
@@ -56,6 +64,10 @@ let memoryDB = {
 function initMemoryDB() {
   if (memoryDBInitialized) return;
   try {
+    const bcrypt = require('bcryptjs');
+    if (memoryDB.users[0]) {
+      memoryDB.users[0].password_hash = bcrypt.hashSync('password123', 10);
+    }
     const rawCitiesPath = path.join(__dirname, '..', 'scripts', 'data', 'rawCities.json');
     const rawActivitiesPath = path.join(__dirname, '..', 'scripts', 'data', 'rawActivities.json');
 
@@ -229,7 +241,55 @@ function handleMemoryQuery(text, params) {
     return { rows: user ? [user] : [] };
   }
 
-  // Fallback generic empty response
+  // 10. UPDATE TRIPS (e.g. share_token)
+  if (lower.startsWith('update trips')) {
+    if (lower.includes('share_token')) {
+      const token = params[0];
+      const tripId = parseInt(params[1], 10);
+      const trip = memoryDB.trips.find((t) => t.id === tripId) || memoryDB.trips[0];
+      if (trip) {
+        trip.share_token = token;
+      }
+      return { rows: [{ share_token: token }] };
+    }
+    return { rows: [memoryDB.trips[0]] };
+  }
+
+  // 11. BUDGETS
+  if (lower.includes('from budgets')) {
+    return {
+      rows: [
+        {
+          id: 1,
+          trip_id: 101,
+          transport_cost: 150.00,
+          stay_cost: 400.00,
+          activity_cost: 127.00,
+          meal_cost: 180.00,
+          total_cost: 857.00,
+        },
+      ],
+    };
+  }
+
+  // 12. ADMIN STATS
+  if (lower.includes('count(distinct') || lower.includes('count(*)') || lower.includes('admin')) {
+    return {
+      rows: [
+        {
+          total_trips: memoryDB.trips.length,
+          total_users: memoryDB.users.length,
+          total_stops: memoryDB.stops.length,
+          total_activities: memoryDB.trip_activities.length,
+          city_name: 'Paris',
+          activity_name: 'Eiffel Tower Tour',
+          count: 5,
+        },
+      ],
+    };
+  }
+
+  // Fallback generic response
   return { rows: [] };
 }
 
