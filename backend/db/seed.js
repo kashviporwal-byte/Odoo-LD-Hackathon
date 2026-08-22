@@ -40,13 +40,14 @@ async function seed() {
 
     // 3. Insert base Activities
     const actRes = await client.query(
-      `INSERT INTO activities (city_id, name, type, cost, duration, description, image_url)
+      `INSERT INTO activities (city_id, name, category, est_cost, est_duration_mins, description, image_url)
        VALUES 
        ($1, 'Eiffel Tower Summit', 'sightseeing', 25.00, 120, 'Skip-the-line elevator trip to Eiffel Tower peak.', 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=400'),
        ($1, 'Louvre Museum Tour', 'sightseeing', 15.00, 180, 'Guided corridors tour focusing on main masterworks.', 'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?auto=format&fit=crop&w=400'),
        ($2, 'Colosseum Guided Tour', 'sightseeing', 30.00, 150, 'Full walk around the Colosseum arena floor.', 'https://images.unsplash.com/photo-1552832230-c0197dd311b5?auto=format&fit=crop&w=400'),
        ($3, 'Sushi Masterclass', 'food', 60.00, 120, 'Learn to slice and assemble sushi from a local master.', 'https://images.unsplash.com/photo-1579871494447-9811cf80d66c?auto=format&fit=crop&w=400')
-       RETURNING id, name`
+       RETURNING id, name`,
+      [parisId, romeId, tokyoId]
     );
     const eiffelId = actRes.rows.find(a => a.name === 'Eiffel Tower Summit').id;
     const louvreId = actRes.rows.find(a => a.name === 'Louvre Museum Tour').id;
@@ -55,7 +56,7 @@ async function seed() {
 
     // 4. Insert Trip
     const tripRes = await client.query(
-      `INSERT INTO trips (user_id, name, start_date, end_date, description, cover_photo_url, share_token)
+      `INSERT INTO trips (user_id, name, start_date, end_date, description, cover_photo_url, share_slug)
        VALUES ($1, 'Europe & Asia Exploration', '2026-07-01', '2026-07-15', 'My summer multi-city trip plan!', 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=800', 'explorers_token_xyz')
        RETURNING id`,
       [regularUserId]
@@ -64,7 +65,7 @@ async function seed() {
 
     // 5. Insert Trip Stops
     const stopRes = await client.query(
-      `INSERT INTO stops (trip_id, city_id, start_date, end_date, order_index)
+      `INSERT INTO stops (trip_id, city_id, arrival_date, departure_date, stop_order)
        VALUES 
        ($1, $2, '2026-07-01', '2026-07-05', 1),
        ($1, $3, '2026-07-06', '2026-07-10', 2),
@@ -89,8 +90,8 @@ async function seed() {
 
     // 7. Insert Budget configuration
     await client.query(
-      `INSERT INTO budgets (trip_id, transport_cost, stay_cost, activity_cost, meal_cost, total_cost)
-       VALUES ($1, 200.00, 500.00, 130.00, 300.00, 1130.00)`,
+      `INSERT INTO budgets (trip_id, transport_cost, stay_cost, activities_cost, meals_cost, currency)
+       VALUES ($1, 200.00, 500.00, 130.00, 300.00, 'USD')`,
       [tripId]
     );
 
