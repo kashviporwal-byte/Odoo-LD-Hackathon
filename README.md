@@ -8,9 +8,26 @@ Welcome to the GlobeTrotter project! This is a full-stack monorepo scaffolded fo
 GlobeTrotter/
 ├── docker-compose.yml       # Standard Docker orchestrator (DB + Backend + Frontend)
 ├── README.md                # This setup guide
-├── backend/                 # Node.js + Express backend (Person A, B, C)
+├── backend/                 # Node.js + Express backend API
 └── frontend/                # React (Vite) + Tailwind CSS + Leaflet frontend
 ```
+
+---
+
+## 🌟 Vision & Mission
+
+**Overall Vision**
+To become a personalized, intelligent, and collaborative platform that transforms the way individuals plan and experience travel. Empowering users to dream, design, and organize trips with ease by offering an end-to-end travel planning tool that combines flexibility and interactivity.
+
+It envisions a world where users can explore global destinations, visualize their journeys through structured itineraries, make cost-effective decisions, and share their travel plans within a community—making travel planning as exciting as the trip itself.
+
+**Mission**
+To build a user-centric, responsive application that simplifies the complexity of planning multi-city travel. The platform should provide travelers with intuitive tools to:
+- Add and manage travel stops and durations
+- Explore cities and activities of interest
+- Estimate trip budgets automatically
+- Visualize timelines and plans
+- Share trip plans with others
 
 ---
 
@@ -27,7 +44,7 @@ docker-compose up --build
 
 ---
 
-### Option 2: Running Locally (Recommended for rapid development)
+### Option 2: Running Locally
 
 #### 1. Database (PostgreSQL)
 Ensure you have a PostgreSQL server running locally, or use a Docker container for just the DB:
@@ -74,26 +91,10 @@ docker run --name globetrotter-db -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=g
 
 ---
 
-## 🧑💻 Dev Team Division of Labor
-
-### 🧑💻 PERSON A: Database, Auth, Core Trip Management & DevOps
-- **Files**:
-  - `backend/config/db.js` (finalizes connection pool)
-  - `backend/db/schema.sql` (finalizes SQL migrations/schema)
-  - `backend/routes/auth.js` & `backend/routes/users.js`
-  - `backend/middleware/authMiddleware.js`
-- **Scope**: User authentication (Signup/Login/JWT), Profile management, Trips CRUD, and DevOps/Deployment setups.
-
-### 🧑💻 PERSON B: Itinerary Builder, City/Activity Discovery & Map Data
-- **Files**:
-  - `backend/routes/trips.js` (stops endpoints)
-  - `backend/routes/cities.js` (city search & Nominatim seeding scraper)
-  - `backend/routes/activities.js` (activity search & stop linking)
-- **Scope**: Stops management, seeding Nominatim cities, activities integration, structuring the itinerary response to return `{ days, route }` ready for Leaflet map polylines.
-
-### 🧑💻 PERSON C: Budget Engine, Sharing, Admin & API Documentation
-- **Files**:
-  - `backend/routes/budget.js`
-  - `backend/routes/sharing.js` (token generator + cloning engine)
-  - `backend/routes/admin.js` (admin dashboards statistics and user toggling)
-- **Scope**: Budget engine, social share OpenGraph payload, public read-only trip viewer, cloning trips to another user's account, admin statistics endpoint, and keeping the Postman collections updated.
+## 🛠️ Main Features
+1. **Login & Registration**: Auth system using JWT tokens to secure user settings and trips.
+2. **Interactive Itinerary Builder**: Add/remove stops and organize drag-and-drop locations on Leaflet maps.
+3. **Budget Engine**: Automatic daily rate estimation and overbudget category alerts.
+4. **Calendar Timeline**: Expandable day grids mapping travel activities.
+5. **Public Sharing**: Public URL link generation for read-only view and trip cloning.
+6. **Admin Dashboard**: View user statistics, top cities, and manage accounts.
