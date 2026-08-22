@@ -21,7 +21,7 @@ interface ItineraryState {
   // Trips CRUD
   trips: Trip[];
   fetchTrips: () => Promise<void>;
-  addTrip: (trip: Trip) => void;
+  addTrip: (trip: Trip) => Promise<string>;
   updateTrip: (id: string, updates: Partial<Trip>) => void;
   deleteTrip: (id: string) => void;
   getTripById: (id: string) => Trip | undefined;
@@ -79,17 +79,41 @@ export const useItineraryStore = create<ItineraryState>((set, get) => ({
     }
   },
 
-  addTrip: (trip) => {
+  addTrip: async (trip) => {
+    // Optimistically add to local store so UI is responsive
     set((s) => ({ trips: [...s.trips, trip] }));
+
     const startDate = (trip as any).startDate || trip.stops[0]?.startDate || '2026-06-01';
     const endDate = (trip as any).endDate || trip.stops[trip.stops.length - 1]?.endDate || '2026-06-15';
-    tripsApi.createTrip({
-      name: trip.name,
-      start_date: startDate,
-      end_date: endDate,
-      description: trip.description,
-      cover_photo_url: trip.coverPhoto,
-    }).catch(() => {});
+
+    try {
+      const res = await tripsApi.createTrip({
+        name: trip.name,
+        start_date: startDate,
+        end_date: endDate,
+        description: trip.description,
+        cover_photo_url: trip.coverPhoto,
+      });
+
+      if (res.success && res.data) {
+        const backendTrip = (res.data as any).trip || res.data;
+        if (backendTrip?.id) {
+          const confirmedId = String(backendTrip.id);
+          // Patch local store: replace the local UUID with the real DB integer ID
+          set((s) => ({
+            trips: s.trips.map((t) =>
+              t.id === trip.id ? { ...t, id: confirmedId } : t
+            ),
+          }));
+          return confirmedId;
+        }
+      }
+    } catch {
+      // Backend unavailable — fall back to the local UUID
+    }
+
+    // Fallback: return the original local ID so navigation still works
+    return trip.id;
   },
 
   updateTrip: (id, updates) => {

@@ -97,7 +97,7 @@ router.post('/login', authLimiter, async (req, res, next) => {
     const user = result.rows[0];
 
     if (!user) {
-      return res.status(401).json({ success: false, error: 'Invalid email or password.' });
+      return res.status(401).json({ success: false, error: 'No account found with this email. Please switch to Sign Up.' });
     }
 
     // Verify account is active (Admin lock control check)
@@ -108,7 +108,7 @@ router.post('/login', authLimiter, async (req, res, next) => {
     // Verify password hash
     const isMatch = await bcrypt.compare(password, user.password_hash);
     if (!isMatch) {
-      return res.status(401).json({ success: false, error: 'Invalid email or password.' });
+      return res.status(401).json({ success: false, error: 'Incorrect password. Please check your password or reset it.' });
     }
 
     // Create JWT Token
@@ -155,19 +155,39 @@ router.post('/google', authLimiter, async (req, res, next) => {
     let payload;
     try {
       const decoded = jwt.decode(credential);
-      if (decoded && decoded.email) {
+      if (decoded && (decoded.email || decoded.sub)) {
+        // Extract real name from Google claims (name, full_name, given_name + family_name)
+        const realName = decoded.name ||
+          decoded.full_name ||
+          decoded.user_metadata?.full_name ||
+          decoded.user_metadata?.name ||
+          (decoded.given_name ? `${decoded.given_name} ${decoded.family_name || ''}`.trim() : '') ||
+          (decoded.email ? decoded.email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'Traveler');
+
         payload = {
-          email: decoded.email,
-          name: decoded.name || 'Google Traveler',
-          picture: decoded.picture || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150'
+          email: decoded.email ? decoded.email.toLowerCase().trim() : 'traveler@gmail.com',
+          name: realName,
+          picture: decoded.picture || decoded.avatar_url || decoded.user_metadata?.avatar_url || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150'
         };
       } else {
-        payload = JSON.parse(credential);
+        const parsed = typeof credential === 'object' ? credential : JSON.parse(credential);
+        const realName = parsed.name ||
+          parsed.full_name ||
+          parsed.user_metadata?.full_name ||
+          parsed.user_metadata?.name ||
+          (parsed.given_name ? `${parsed.given_name} ${parsed.family_name || ''}`.trim() : '') ||
+          (parsed.email ? parsed.email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'Traveler');
+
+        payload = {
+          email: parsed.email ? parsed.email.toLowerCase().trim() : 'traveler@gmail.com',
+          name: realName,
+          picture: parsed.picture || parsed.photo_url || parsed.avatar_url || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150'
+        };
       }
     } catch (e) {
       payload = {
-        email: 'google_user@gmail.com',
-        name: 'Google Traveler',
+        email: 'traveler@gmail.com',
+        name: 'Traveler',
         picture: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150'
       };
     }
@@ -189,7 +209,12 @@ router.post('/google', authLimiter, async (req, res, next) => {
       if (user.is_active === false) {
         return res.status(403).json({ success: false, error: 'Account disabled. Please contact an administrator.' });
       }
-      if (picture && user.photo_url !== picture) {
+      // Update name and picture if they were previously set to generic placeholder or updated
+      if (name && (user.name.toLowerCase() === 'google traveler' || user.name !== name)) {
+        await db.query('UPDATE users SET name = $1, photo_url = $2 WHERE id = $3', [name, picture || user.photo_url, user.id]);
+        user.name = name;
+        if (picture) user.photo_url = picture;
+      } else if (picture && user.photo_url !== picture) {
         await db.query('UPDATE users SET photo_url = $1 WHERE id = $2', [picture, user.id]);
         user.photo_url = picture;
       }
@@ -248,22 +273,84 @@ router.post('/forgot-password', authLimiter, async (req, res, next) => {
 
 /**
  * @route   POST /api/auth/reset-password
- * @desc    Reset password using reset token
+ * @desc    Reset password using email and new password
  * @access  Public (Person A)
  */
 router.post('/reset-password', authLimiter, async (req, res, next) => {
-  const { token, newPassword } = req.body;
+  const { email, newPassword } = req.body;
 
   try {
-    if (!token || !newPassword) {
-      return res.status(400).json({ success: false, error: 'Please provide token and new password.' });
+    if (!email || !newPassword) {
+      return res.status(400).json({ success: false, error: 'Please provide email and new password.' });
+    }
+    if (newPassword.length < 6) {
+      return res.status(400).json({ success: false, error: 'New password must be at least 6 characters long.' });
     }
 
-    console.log(`Reset password request processed for token: ${token}`);
+    const sanitizedEmail = String(email).toLowerCase().trim();
+    const userResult = await db.query('SELECT id FROM users WHERE email = $1', [sanitizedEmail]);
+    if (userResult.rows.length === 0) {
+      return res.status(404).json({ success: false, error: 'No account registered with this email.' });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const newHash = await bcrypt.hash(newPassword, salt);
+
+    await db.query('UPDATE users SET password_hash = $1 WHERE email = $2', [newHash, sanitizedEmail]);
 
     res.status(200).json({
       success: true,
-      message: 'Password has been reset successfully.'
+      message: 'Password has been reset successfully. You can now login.'
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * @route   GET /api/auth/profile
+ * @desc    Return current user profile from JWT token (used by SyncAuth)
+ * @access  Private (Bearer token required)
+ */
+router.get('/profile', async (req, res, next) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ success: false, error: 'No token provided.' });
+    }
+
+    const token = authHeader.split(' ')[1];
+    let decoded;
+    try {
+      decoded = jwt.verify(token, JWT_SECRET);
+    } catch {
+      return res.status(401).json({ success: false, error: 'Invalid or expired token.' });
+    }
+
+    const userResult = await db.query(
+      'SELECT id, name, email, role, language, photo_url, created_at FROM users WHERE id = $1',
+      [decoded.id]
+    );
+
+    if (!userResult.rows[0]) {
+      return res.status(404).json({ success: false, error: 'User not found.' });
+    }
+
+    const user = userResult.rows[0];
+
+    res.status(200).json({
+      success: true,
+      data: {
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role || 'user',
+          language: user.language || 'English',
+          photo_url: user.photo_url,
+          created_at: user.created_at,
+        }
+      }
     });
   } catch (error) {
     next(error);
@@ -271,3 +358,5 @@ router.post('/reset-password', authLimiter, async (req, res, next) => {
 });
 
 module.exports = router;
+
+

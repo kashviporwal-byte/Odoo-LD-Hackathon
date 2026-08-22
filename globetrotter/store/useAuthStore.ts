@@ -1,8 +1,9 @@
+'use client';
+
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, createJSONStorage } from 'zustand/middleware';
 import type { User } from '@/types';
-import { mockUser } from '@/lib/mockData';
-import { authApi } from '@/lib/api';
+import { logoutAction } from '@/lib/auth-actions';
 
 interface UserSettings {
   tripReminders: boolean;
@@ -25,9 +26,8 @@ interface AuthState {
   token: string | null;
   isAuthenticated: boolean;
   settings: UserSettings;
-  login: (email: string, password: string) => Promise<boolean>;
-  signup: (name: string, email: string, password: string) => Promise<boolean>;
-  logout: () => void;
+  setAuth: (user: User, token?: string) => void;
+  logout: () => Promise<void>;
   updateUser: (updates: Partial<User>) => void;
   updateSettings: (updates: Partial<UserSettings>) => void;
 }
@@ -40,91 +40,45 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
       settings: defaultSettings,
 
-      login: async (email: string, password: string) => {
-        try {
-          const res = await authApi.login(email, password);
-          if (res.success && res.data) {
-            const backendUser = res.data.user;
-            const token = res.data.token;
-            if (typeof window !== 'undefined' && token) {
-              localStorage.setItem('token', token);
-            }
-            const user: User = {
-              id: String(backendUser.id || `user-${Date.now()}`),
-              name: backendUser.name || email.split('@')[0],
-              email: backendUser.email || email,
-              tripsCount: 0,
-              savedDestinations: [],
-              joinedAt: new Date().toISOString(),
-              language: backendUser.language || 'English',
-            };
-            set({ user, token, isAuthenticated: true });
-            return true;
-          }
-        } catch {
-          // Fall through to fallback
+      setAuth: (user: User, token?: string) => {
+        if (typeof window !== 'undefined') {
+          if (token) localStorage.setItem('token', token);
+          localStorage.removeItem('globetrotter-auth');
         }
-
-        // Fallback demo user if backend is offline
-        const fallbackUser: User = { ...mockUser, email, name: email.split('@')[0] };
-        set({ user: fallbackUser, token: 'demo-token-123', isAuthenticated: true });
-        return true;
+        set({ user, token: token ?? null, isAuthenticated: true });
       },
 
-      signup: async (name: string, email: string, password: string) => {
+      logout: async () => {
         try {
-          const res = await authApi.signup(name, email, password);
-          if (res.success && res.data) {
-            const backendUser = res.data.user;
-            const token = res.data.token;
-            if (typeof window !== 'undefined' && token) {
-              localStorage.setItem('token', token);
-            }
-            const user: User = {
-              id: String(backendUser.id || `user-${Date.now()}`),
-              name: backendUser.name || name,
-              email: backendUser.email || email,
-              tripsCount: 0,
-              savedDestinations: [],
-              joinedAt: new Date().toISOString(),
-              language: backendUser.language || 'English',
-            };
-            set({ user, token, isAuthenticated: true });
-            return true;
-          }
-        } catch {
-          // Fall through to fallback
-        }
-
-        const user: User = {
-          ...mockUser,
-          id: `user-${Date.now()}`,
-          name,
-          email,
-          tripsCount: 0,
-          savedDestinations: [],
-          joinedAt: new Date().toISOString(),
-        };
-        set({ user, token: 'demo-token-123', isAuthenticated: true });
-        return true;
-      },
-
-      logout: () => {
+          await logoutAction();
+        } catch {}
         if (typeof window !== 'undefined') {
           localStorage.removeItem('token');
+          localStorage.removeItem('globetrotter-auth');
         }
         set({ user: null, token: null, isAuthenticated: false });
       },
 
       updateUser: (updates: Partial<User>) => {
-        const current = get().user;
-        if (current) set({ user: { ...current, ...updates } });
+        set((state) => ({
+          user: state.user ? { ...state.user, ...updates } : state.user,
+        }));
       },
 
       updateSettings: (updates: Partial<UserSettings>) => {
         set({ settings: { ...get().settings, ...updates } });
       },
     }),
-    { name: 'globetrotter-auth' }
+    {
+      name: 'globetrotter-auth',
+      storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({
+        user: state.user,
+        token: state.token,
+        isAuthenticated: state.isAuthenticated,
+        settings: state.settings,
+      }),
+      version: 2,
+    }
   )
 );

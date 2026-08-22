@@ -28,12 +28,15 @@ export const metadata: Metadata = {
 };
 
 import GlobalGlobeOverlay from '@/components/trips/GlobalGlobeOverlay';
+import SyncAuth from '@/components/auth/SyncAuth';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${inter.variable} ${playfair.variable}`}>
       <body className="bg-gt-bg text-gt-text antialiased">
         <QueryProvider>
+          {/* Re-validates gt_session cookie & overwrites stale localStorage user on every load */}
+          <SyncAuth />
           {children}
           <GlobalGlobeOverlay />
         </QueryProvider>
@@ -41,3 +44,4 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   );
 }
+

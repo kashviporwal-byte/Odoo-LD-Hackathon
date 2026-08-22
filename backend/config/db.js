@@ -266,6 +266,23 @@ function handleMemoryQuery(text, params) {
 
   // 9. UPDATE USER
   if (lower.startsWith('update users')) {
+    if (lower.includes('password_hash')) {
+      const [newHash, email] = params;
+      const user = memoryDB.users.find((u) => u.email.toLowerCase() === String(email).toLowerCase());
+      if (user) {
+        user.password_hash = newHash;
+      }
+      return { rows: user ? [user] : [] };
+    }
+    if (lower.includes('set name = $1')) {
+      const [newName, photoUrl, userId] = params;
+      const user = memoryDB.users.find((u) => u.id === parseInt(userId, 10));
+      if (user) {
+        if (newName) user.name = newName;
+        if (photoUrl) user.photo_url = photoUrl;
+      }
+      return { rows: user ? [user] : [] };
+    }
     const photoUrl = params[0];
     const userId = parseInt(params[1], 10);
     const user = memoryDB.users.find((u) => u.id === userId);

@@ -88,6 +88,7 @@ function TripCard({ trip }: { trip: Trip }) {
 function CityCard({ city, index }: { city: typeof mockCities[0]; index: number }) {
   const router = useRouter();
   const openGlobe = useGlobeStore((s) => s.openGlobe);
+  const closeGlobe = useGlobeStore((s) => s.closeGlobe);
   const { addTrip } = useItineraryStore();
   const { user } = useAuthStore();
   const [isGenerating, setIsGenerating] = useState(false);
@@ -98,20 +99,40 @@ function CityCard({ city, index }: { city: typeof mockCities[0]; index: number }
     openGlobe(city.lat ?? 35.6762, city.lng ?? 139.6503, city.name);
   };
 
-  const handleCardClick = () => {
+  const handleCardClick = async () => {
     if (isGenerating) return;
     setIsGenerating(true);
 
-    // Automatically generate a full trip with curated stops and activities
+    // 1. Generate the trip object with a unique local ID as placeholder
     const generatedTrip = generateItineraryForCity(city, {
       userId: user?.id,
     });
 
-    // Add to user trips in store and database
-    addTrip(generatedTrip);
+    // 2. Immediately open the globe to fly to the destination (visual feedback)
+    openGlobe(
+      city.lat ?? 35.6762,
+      city.lng ?? 139.6503,
+      city.name
+    );
 
-    // Navigate to the newly generated trip's itinerary and builder
-    router.push(`/trips/${generatedTrip.id}`);
+    try {
+      // 3. Persist in store AND await the real backend ID
+      //    addTrip now returns the confirmed DB integer ID (or the local UUID as fallback)
+      const confirmedTripId = await addTrip(generatedTrip);
+
+      // 4. After 2.5 s: close globe and navigate using the confirmed ID
+      setTimeout(() => {
+        closeGlobe();
+        router.push(`/trips/${confirmedTripId}/builder`);
+      }, 2500);
+    } catch {
+      // Navigation safety net — use local ID if everything fails
+      setTimeout(() => {
+        closeGlobe();
+        router.push(`/trips/${generatedTrip.id}/builder`);
+        setIsGenerating(false);
+      }, 2500);
+    }
   };
 
   return (
@@ -119,7 +140,7 @@ function CityCard({ city, index }: { city: typeof mockCities[0]; index: number }
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05 }}
-      whileHover={{ y: -3 }}
+      whileHover={isGenerating ? {} : { y: -3 }}
     >
       <div
         className="relative h-52 rounded-2xl overflow-hidden cursor-pointer group shadow-sm hover:shadow-md transition-shadow"
@@ -128,32 +149,55 @@ function CityCard({ city, index }: { city: typeof mockCities[0]; index: number }
         <img
           src={city.coverPhoto}
           alt={city.name}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+          className={`w-full h-full object-cover transition-transform duration-500 ${isGenerating ? 'scale-110 brightness-50' : 'group-hover:scale-110'}`}
         />
         <div className="img-overlay" />
-        <div className="absolute top-3 right-3 flex items-center gap-1.5 z-10">
-          <button
-            onClick={handleGlobeClick}
-            className="p-2 rounded-full bg-white/85 hover:bg-white text-amber-600 shadow-md transition-transform hover:scale-110"
-            title="View on 3D Globe"
-          >
-            <Globe className="w-4 h-4" />
-          </button>
-        </div>
-        <div className="absolute top-3 left-3 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
-          <span className="badge bg-white/90 text-slate-900 shadow-sm text-xs font-bold py-1 px-2 flex items-center gap-1">
-            <Plus className="w-3 h-3 text-amber-600" /> Plan Trip
-          </span>
-        </div>
-        <div className="absolute inset-0 flex flex-col justify-end p-4 pointer-events-none">
-          <h3 className="text-slate-900 font-bold text-base">{city.name}</h3>
-          <p className="text-slate-500 text-xs">{city.country}</p>
-          <div className="flex items-center gap-2 mt-1.5">
-            <span className={`badge badge-amber text-xs`}>${city.avgDailyCostUSD}/day</span>
-            <span className="flex items-center gap-0.5 text-amber-600 text-xs">
-              <Star className="w-3 h-3 fill-amber-400" />{city.popularityScore}
+
+        {/* Generating overlay */}
+        {isGenerating && (
+          <div className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-2 bg-black/40 backdrop-blur-[2px]">
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+              className="w-7 h-7 rounded-full border-2 border-white/30 border-t-white"
+            />
+            <p className="text-white text-xs font-semibold tracking-wide">Generating itinerary…</p>
+          </div>
+        )}
+
+        {/* Globe button – hidden while loading */}
+        {!isGenerating && (
+          <div className="absolute top-3 right-3 flex items-center gap-1.5 z-10">
+            <button
+              onClick={handleGlobeClick}
+              className="p-2 rounded-full bg-white/85 hover:bg-white text-amber-600 shadow-md transition-transform hover:scale-110"
+              title="View on 3D Globe"
+            >
+              <Globe className="w-4 h-4" />
+            </button>
+          </div>
+        )}
+
+        {/* Hover plan badge */}
+        {!isGenerating && (
+          <div className="absolute top-3 left-3 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+            <span className="badge bg-white/90 text-slate-900 shadow-sm text-xs font-bold py-1 px-2 flex items-center gap-1">
+              <Plus className="w-3 h-3 text-amber-600" /> Plan Trip
             </span>
           </div>
+        )}
+
+        <div className="absolute inset-0 flex flex-col justify-end p-4 pointer-events-none">
+          <h3 className="text-white font-bold text-base drop-shadow">{city.name}</h3>
+          <p className="text-white/70 text-xs">{city.country}</p>
+          {!isGenerating && (
+            <div className="flex items-center gap-2 mt-1.5">
+              <span className="badge badge-amber text-xs">${city.avgDailyCostUSD}/day</span>
+              <span className="flex items-center gap-0.5 text-amber-400 text-xs">
+                <Star className="w-3 h-3 fill-amber-400" />{city.popularityScore}
+              </span>
+            </div>
+          )}
         </div>
       </div>
     </motion.div>

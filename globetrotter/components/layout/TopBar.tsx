@@ -51,25 +51,30 @@ export default function TopBar() {
         </span>
       </Link>
 
-      {/* ── Right: Avatar ───────────────────────────────────────────── */}
+      {/* ── Right: User Profile & Avatar ─────────────────────────────────── */}
       <Link
         href="/profile"
-        className="w-9 h-9 rounded-full overflow-hidden ring-2 ring-transparent hover:ring-amber-400 transition-all flex-shrink-0"
+        className="flex items-center gap-2.5 py-1 px-2 rounded-full hover:bg-black/[0.04] transition-all group"
         aria-label="View profile"
       >
-        {user?.avatarUrl ? (
-          <img
-            src={user.avatarUrl}
-            alt={user.name}
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <div className="w-full h-full bg-amber-500/10 flex items-center justify-center">
-            <span className="text-amber-600 text-sm font-bold">
-              {user?.name?.[0] ?? 'G'}
-            </span>
-          </div>
-        )}
+        <span className="hidden sm:inline-block text-sm font-semibold text-slate-700 group-hover:text-slate-900 transition-colors max-w-[140px] truncate">
+          {user?.name || 'Traveler'}
+        </span>
+        <div className="w-8 h-8 rounded-full overflow-hidden ring-2 ring-transparent group-hover:ring-amber-400 transition-all flex-shrink-0">
+          {user?.avatarUrl ? (
+            <img
+              src={user.avatarUrl}
+              alt={user?.name || 'User Avatar'}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-full h-full bg-amber-500/10 flex items-center justify-center">
+              <span className="text-amber-600 text-xs font-bold">
+                {user?.name?.[0] ?? 'T'}
+              </span>
+            </div>
+          )}
+        </div>
       </Link>
     </header>
   );

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 import {
   User, Trash2, Camera, Save,
   Heart, MapPin, Settings, Bell, Shield, Loader2,
@@ -32,6 +33,7 @@ function Toggle({ on, onChange, label }: { on: boolean; onChange: (v: boolean) =
 }
 
 export default function ProfilePage() {
+  const router = useRouter();
   const { user, settings, updateUser, updateSettings, logout } = useAuthStore();
   const [form, setForm] = useState({
     name: user?.name ?? '',
@@ -242,7 +244,7 @@ export default function ProfilePage() {
                 <div className="glass-light p-4 rounded-xl border border-red-500/20">
                   <p className="text-sm text-red-400 mb-3 font-medium">Are you sure? This cannot be undone.</p>
                   <div className="flex gap-2">
-                    <button type="button" onClick={() => { logout(); }} className="btn-danger flex-1 justify-center">Yes, Delete</button>
+                    <button type="button" onClick={async () => { await logout(); router.push('/login'); }} className="btn-danger flex-1 justify-center">Yes, Delete</button>
                     <button type="button" onClick={() => setDeleteConfirm(false)} className="btn-ghost flex-1 justify-center">Cancel</button>
                   </div>
                 </div>

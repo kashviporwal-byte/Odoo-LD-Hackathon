@@ -15,7 +15,12 @@ export interface Activity {
   name: string;
   description: string;
   category: ActivityCategory;
-  time?: string; // "09:00"
+  /** @deprecated Use startTime instead */
+  time?: string;
+  /** Required: 24-h HH:mm, e.g. "09:00" */
+  startTime: string;
+  /** Required: 24-h HH:mm, e.g. "11:30" */
+  endTime: string;
   durationHours?: number;
   cost: number;
   currency: string;
