@@ -1,7 +1,6 @@
 'use client';
 
-import { use } from 'react';
-import { useState } from 'react';
+import { use, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import {
@@ -169,10 +168,14 @@ function CalendarView({ stops }: { stops: CityStop[] }) {
 
 export default function TripViewPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
-  const { getTripById } = useItineraryStore();
+  const { getTripById, fetchTripById } = useItineraryStore();
   const { viewMode, toggleViewMode } = useItineraryStore();
   const [copied, setCopied] = useState(false);
   const trip = getTripById(id);
+
+  useEffect(() => {
+    fetchTripById(id);
+  }, [id, fetchTripById]);
 
   if (!trip) {
     return (

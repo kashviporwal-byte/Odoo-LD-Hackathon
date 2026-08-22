@@ -1,6 +1,6 @@
 'use client';
 
-import { use, useMemo, useState } from 'react';
+import { use, useMemo, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import {
@@ -273,8 +273,12 @@ function DayDetailPanel({ dayInfo, dateKey }: { dayInfo: DayInfo; dateKey: strin
 
 export default function TripCalendarPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
-  const { getTripById } = useItineraryStore();
+  const { getTripById, fetchTripById } = useItineraryStore();
   const trip = getTripById(id);
+
+  useEffect(() => {
+    fetchTripById(id);
+  }, [id, fetchTripById]);
 
   const dayMap = useMemo(
     () => (trip ? buildDayMap(trip.stops) : {}),
@@ -295,6 +299,18 @@ export default function TripCalendarPage({ params }: { params: Promise<{ id: str
   const [viewYear, setViewYear] = useState(initialMonth.year);
   const [viewMonth, setViewMonth] = useState(initialMonth.month);
   const [selectedDate, setSelectedDate] = useState<string | null>(tripDates[0] ?? null);
+
+  // Sync state when trip dates load
+  useEffect(() => {
+    if (tripDates.length > 0) {
+      if (!selectedDate) {
+        setSelectedDate(tripDates[0]);
+      }
+      const first = new Date(`${tripDates[0]}T12:00:00`);
+      setViewYear(first.getFullYear());
+      setViewMonth(first.getMonth());
+    }
+  }, [tripDates, selectedDate]);
 
   if (!trip) {
     return (

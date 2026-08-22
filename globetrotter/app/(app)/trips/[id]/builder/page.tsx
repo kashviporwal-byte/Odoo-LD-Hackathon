@@ -1,6 +1,6 @@
 'use client';
 
-import { use, useState } from 'react';
+import { use, useState, useEffect } from 'react';
 import { AnimatePresence, motion, Reorder } from 'framer-motion';
 import Link from 'next/link';
 import {
@@ -602,9 +602,19 @@ function StopBlock({
 
 export default function ItineraryBuilderPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
-  const { getTripById, addStop, deleteStop, reorderStops, isAddStopModalOpen, openAddStopModal, closeAddStopModal } = useItineraryStore();
+  const { getTripById, fetchTripById, addStop, deleteStop, reorderStops, isAddStopModalOpen, openAddStopModal, closeAddStopModal } = useItineraryStore();
   const trip = getTripById(id);
   const [stops, setStops] = useState(trip?.stops ?? []);
+
+  useEffect(() => {
+    fetchTripById(id);
+  }, [id, fetchTripById]);
+
+  useEffect(() => {
+    if (trip?.stops) {
+      setStops(trip.stops);
+    }
+  }, [trip?.stops]);
 
   if (!trip) {
     return (

@@ -21,6 +21,7 @@ interface ItineraryState {
   // Trips CRUD
   trips: Trip[];
   fetchTrips: () => Promise<void>;
+  fetchTripById: (id: string) => Promise<void>;
   addTrip: (trip: Trip) => Promise<string>;
   updateTrip: (id: string, updates: Partial<Trip>) => void;
   deleteTrip: (id: string) => void;
@@ -76,6 +77,70 @@ export const useItineraryStore = create<ItineraryState>((set, get) => ({
       }
     } catch {
       // Keep local mockTrips as resilient fallback
+    }
+  },
+
+  fetchTripById: async (id) => {
+    try {
+      const res = await tripsApi.getTripById(id);
+      if (res.success && res.data) {
+        const data = res.data as any;
+        const bt = data.trip || data;
+        if (!bt) return;
+
+        const stops = (data.stops || bt.stops || []).map((s: any) => ({
+          id: String(s.id),
+          cityId: String(s.city_id),
+          city: s.city_name || s.cityName || 'City',
+          country: s.country || '',
+          countryCode: s.countryCode || '',
+          startDate: s.start_date || s.startDate || '',
+          endDate: s.end_date || s.endDate || '',
+          order: s.order_index ?? s.stop_order ?? 0,
+          coverPhoto: s.image_url || s.coverPhoto || '',
+          activities: (s.activities || []).map((a: any) => ({
+            id: String(a.id),
+            name: a.name || a.activity_name || '',
+            description: a.description || '',
+            category: a.category || a.type || 'sightseeing',
+            startTime: a.scheduled_time || a.startTime || '10:00',
+            endTime: a.endTime || '12:00',
+            durationHours: a.durationHours || 2,
+            cost: parseFloat(a.cost || a.cost_override || 0),
+            currency: 'USD',
+            rating: 4.5,
+            cityId: String(s.city_id),
+            imageUrl: a.image_url || '',
+          })),
+        }));
+
+        const formattedTrip: Trip = {
+          id: String(bt.id),
+          name: bt.name,
+          description: bt.description || '',
+          coverPhoto: bt.cover_photo_url || bt.coverPhoto,
+          status: 'upcoming',
+          isPublic: bt.is_public ?? false,
+          budget: bt.budget || 2000,
+          budgetBreakdown: { transport: 0, stay: 0, activities: 0, meals: 0, misc: 0 },
+          userId: String(bt.user_id || 'user-1'),
+          createdAt: bt.created_at || new Date().toISOString(),
+          updatedAt: bt.created_at || new Date().toISOString(),
+          stops,
+        };
+
+        const existingTrips = get().trips;
+        const exists = existingTrips.some((t) => t.id === String(bt.id));
+        if (exists) {
+          set({
+            trips: existingTrips.map((t) => (t.id === String(bt.id) ? formattedTrip : t)),
+          });
+        } else {
+          set({ trips: [...existingTrips, formattedTrip] });
+        }
+      }
+    } catch (err) {
+      console.error('Failed to fetch single trip details:', err);
     }
   },
 
