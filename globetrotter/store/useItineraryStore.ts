@@ -71,7 +71,32 @@ export const useItineraryStore = create<ItineraryState>((set, get) => ({
           userId: String(bt.user_id || 'user-1'),
           createdAt: bt.created_at || new Date().toISOString(),
           updatedAt: bt.created_at || new Date().toISOString(),
-          stops: bt.stops || [],
+          // Properly map stops so calendar/builder always have correct field shapes
+          stops: (bt.stops || []).map((s: any) => ({
+            id: String(s.id || `stop-${Math.random()}`),
+            cityId: String(s.city_id || s.cityId || ''),
+            city: s.city_name || s.city || s.cityName || 'City',
+            country: s.country || '',
+            countryCode: s.countryCode || s.country_code || '',
+            startDate: s.start_date || s.startDate || '',
+            endDate: s.end_date || s.endDate || '',
+            order: s.order_index ?? s.stop_order ?? s.order ?? 0,
+            coverPhoto: s.image_url || s.coverPhoto || '',
+            activities: (s.activities || []).map((a: any, ai: number) => ({
+              id: String(a.id || `act-${ai}`),
+              name: a.name || a.activity_name || a.custom_name || '',
+              description: a.description || '',
+              category: a.category || a.type || 'sightseeing',
+              startTime: a.scheduled_time || a.startTime || a.time_slot || '10:00',
+              endTime: a.endTime || '12:00',
+              durationHours: a.durationHours || a.duration_hours || 2,
+              cost: parseFloat(a.cost || a.cost_override || 0),
+              currency: 'USD',
+              rating: a.rating || 4.5,
+              cityId: String(s.city_id || s.cityId || ''),
+              imageUrl: a.image_url || a.imageUrl || '',
+            })),
+          })),
         }));
         set({ trips: backendTrips });
       }

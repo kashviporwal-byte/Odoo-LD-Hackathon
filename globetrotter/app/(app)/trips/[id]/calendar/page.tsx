@@ -178,12 +178,12 @@ function MonthCalendar({
                     {dayInfo.stop.city}
                     {dayInfo.isLastDay && !dayInfo.isFirstDay && ' ◀'}
                   </span>
-                  {isCurrentMonth && dayInfo.activities.slice(0, 2).map((act) => (
+                  {isCurrentMonth && dayInfo.activities.slice(0, 2).map((act, ai) => (
                     <p
-                      key={act.id}
+                      key={act.id ?? `act-${ai}`}
                       className="text-[9px] sm:text-[10px] text-slate-600 truncate leading-tight px-0.5"
                     >
-                      {act.time ? `${act.time} · ` : ''}{act.name}
+                      {(act as any).time || act.startTime ? `${(act as any).time || act.startTime} · ` : ''}{act.name}
                     </p>
                   ))}
                   {isCurrentMonth && dayInfo.activities.length > 2 && (
@@ -234,7 +234,7 @@ function DayDetailPanel({ dayInfo, dateKey }: { dayInfo: DayInfo; dateKey: strin
         <div className="space-y-2">
           {dayInfo.activities.map((act, i) => (
             <motion.div
-              key={act.id}
+              key={act.id ?? `day-act-${i}`}
               initial={{ opacity: 0, x: -6 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: i * 0.04 }}
@@ -246,9 +246,9 @@ function DayDetailPanel({ dayInfo, dateKey }: { dayInfo: DayInfo; dateKey: strin
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-sm truncate">{act.name}</p>
                 <div className="flex items-center gap-2 text-xs text-slate-500 mt-0.5">
-                  {act.time && (
+                  {((act as any).time || act.startTime) && (
                     <span className="flex items-center gap-0.5">
-                      <Clock className="w-3 h-3" />{act.time}
+                      <Clock className="w-3 h-3" />{(act as any).time || act.startTime}
                     </span>
                   )}
                   {act.durationHours != null && <span>{act.durationHours}h</span>}
