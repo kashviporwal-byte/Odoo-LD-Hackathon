@@ -46,7 +46,7 @@ export default function AdminCharts({ trips, cities }: { trips: Trip[]; cities: 
             <YAxis tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} />
             <Tooltip content={<CustomTooltip />} />
             <Legend formatter={(v) => <span style={{ color: '#64748b', fontSize: 12 }}>{v}</span>} />
-            <Line type="monotone" dataKey="Trips" stroke="#f59e0b" strokeWidth={2} dot={false} />
+            <Line type="monotone" dataKey="Trips" stroke="#EDBF9B" strokeWidth={2} dot={false} />
             <Line type="monotone" dataKey="Users" stroke="#60a5fa" strokeWidth={2} dot={false} />
           </LineChart>
         </ResponsiveContainer>
@@ -61,7 +61,7 @@ export default function AdminCharts({ trips, cities }: { trips: Trip[]; cities: 
             <YAxis tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={(v) => `$${v}`} />
             <Tooltip content={<CustomTooltip />} />
             <Legend formatter={(v) => <span style={{ color: '#64748b', fontSize: 12 }}>{v}</span>} />
-            <Bar dataKey="Daily Cost" fill="#f59e0b" radius={[3, 3, 0, 0]} />
+            <Bar dataKey="Daily Cost" fill="#EDBF9B" radius={[3, 3, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </div>

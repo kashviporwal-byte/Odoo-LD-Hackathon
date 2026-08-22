@@ -87,7 +87,7 @@ export default function DestinationGlobe({ destination }: DestinationGlobeProps)
         repeat: Infinity,
         ease: 'easeInOut',
       }}
-      className="flex items-center justify-center overflow-hidden rounded-full shadow-[0_20px_60px_-15px_rgba(217,119,6,0.25)] bg-transparent"
+      className="flex items-center justify-center overflow-hidden rounded-full shadow-[0_20px_60px_-15px_rgba(237,191,155,0.35)] bg-transparent"
       style={{ width: dimensions.width, height: dimensions.height }}
     >
       <Globe
@@ -100,15 +100,15 @@ export default function DestinationGlobe({ destination }: DestinationGlobeProps)
         atmosphereColor="#cbd5e1"
         atmosphereAltitude={0.12}
         onGlobeReady={handleGlobeReady}
-        // ── Amber propagating ring ─────────────────────────────────────────────
+        // ── Accent propagating ring ───────────────────────────────────────────
         ringsData={markerData}
-        ringColor={() => (t: number) => `rgba(217, 119, 6, ${1 - t})`}
+        ringColor={() => (t: number) => `rgba(237, 191, 155, ${1 - t})`}
         ringMaxRadius={10}
         ringPropagationSpeed={3}
         ringRepeatPeriod={900}
-        // ── Solid amber dot (pure WebGL — no DOM, no text, no '?') ────────────
+        // ── Solid accent dot (pure WebGL) ────────────────────────────────────
         pointsData={markerData}
-        pointColor={() => '#D97706'}
+        pointColor={() => '#EDBF9B'}
         pointRadius={0.6}
         pointAltitude={0.01}
         pointsMerge={false}

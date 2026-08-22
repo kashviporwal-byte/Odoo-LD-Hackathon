@@ -19,7 +19,7 @@ const authMiddleware = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
-    req.user = decoded; // Attach user payload ({ id, email, role }) to request
+    req.user = decoded;
     next();
   } catch (error) {
     return res.status(401).json({
@@ -50,7 +50,27 @@ const adminMiddleware = (req, res, next) => {
   next();
 };
 
+/**
+ * Optional authentication - attaches user if token is valid, but allows request through if not
+ */
+const optionalAuthMiddleware = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    const token = authHeader.split(' ')[1];
+    try {
+      const decoded = jwt.verify(token, JWT_SECRET);
+      req.user = decoded;
+    } catch (e) {
+      // Ignore invalid token in optional auth
+    }
+  }
+
+  next();
+};
+
 module.exports = {
   authMiddleware,
-  adminMiddleware
+  adminMiddleware,
+  optionalAuthMiddleware,
 };

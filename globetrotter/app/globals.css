@@ -1,14 +1,24 @@
 @import "tailwindcss";
 
+@theme {
+  --color-accent: #EDBF9B;
+  --color-accent-light: #F4D5BD;
+  --color-accent-dark: #C98E63;
+  --color-amber-400: #F4D5BD;
+  --color-amber-500: #EDBF9B;
+  --color-amber-600: #C98E63;
+}
+
 /* ── Custom Design Tokens ─────────────────────────────────────────── */
 :root {
   --color-bg: #ffffff;
   --color-surface: rgba(0,0,0,0.03);
   --color-surface-hover: rgba(0,0,0,0.06);
   --color-border: rgba(0,0,0,0.08);
-  --color-amber: #d97706;
-  --color-amber-light: #f59e0b;
-  --color-amber-dark: #b45309;
+  --color-accent: #EDBF9B;
+  --color-amber: #EDBF9B;
+  --color-amber-light: #F4D5BD;
+  --color-amber-dark: #C98E63;
   --color-text: #0f172a;
   --color-muted: #64748b;
   --color-card: rgba(255,255,255,0.85);
@@ -28,7 +38,7 @@ body {
   min-height: 100vh;
   /* Light subtle glow */
   background-image:
-    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(217,119,6,0.05) 0%, transparent 60%),
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(237,191,155,0.08) 0%, transparent 60%),
     radial-gradient(ellipse 40% 30% at 80% 80%, rgba(15,23,42,0.03) 0%, transparent 50%);
   background-attachment: fixed;
 }
@@ -57,13 +67,13 @@ body {
 
 /* Gradient text */
 .gradient-text {
-  background: linear-gradient(135deg, #d97706 0%, #f59e0b 50%, #ea580c 100%);
+  background: linear-gradient(135deg, #C98E63 0%, #EDBF9B 50%, #E7A977 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-/* Primary button - Sleek Dark/Amber */
+/* Primary button - Sleek Dark/Accent */
 .btn-primary {
   background: #0f172a;
   color: #ffffff;
@@ -85,10 +95,10 @@ body {
 }
 .btn-primary:active { transform: translateY(0); }
 
-/* Amber Action button */
+/* Accent / Amber Action button */
 .btn-amber {
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-  color: #ffffff;
+  background: linear-gradient(135deg, #F4D5BD 0%, #EDBF9B 100%);
+  color: #0f172a;
   font-weight: 600;
   border-radius: 0.625rem;
   padding: 0.625rem 1.5rem;
@@ -101,7 +111,7 @@ body {
   font-size: 0.9rem;
 }
 .btn-amber:hover {
-  box-shadow: 0 4px 16px rgba(217,119,6,0.3);
+  box-shadow: 0 4px 16px rgba(237,191,155,0.4);
   transform: translateY(-1px);
 }
 .btn-amber:active { transform: translateY(0); }
@@ -153,7 +163,7 @@ body {
   box-shadow: inset 0 1px 2px rgba(0,0,0,0.02);
 }
 .gt-input::placeholder { color: var(--color-muted); }
-.gt-input:focus { border-color: #d97706; box-shadow: 0 0 0 3px rgba(217,119,6,0.15); }
+.gt-input:focus { border-color: #EDBF9B; box-shadow: 0 0 0 3px rgba(237,191,155,0.25); }
 
 /* Badge */
 .badge {
@@ -167,7 +177,7 @@ body {
   text-transform: capitalize;
   letter-spacing: 0.02em;
 }
-.badge-amber { background: rgba(217,119,6,0.1); color: #b45309; border: 1px solid rgba(217,119,6,0.2); }
+.badge-amber { background: rgba(237,191,155,0.18); color: #88522E; border: 1px solid rgba(237,191,155,0.35); }
 .badge-blue { background: rgba(59,130,246,0.1); color: #1d4ed8; border: 1px solid rgba(59,130,246,0.2); }
 .badge-green { background: rgba(34,197,94,0.1); color: #15803d; border: 1px solid rgba(34,197,94,0.2); }
 .badge-red { background: rgba(239,68,68,0.1); color: #b91c1c; border: 1px solid rgba(239,68,68,0.2); }
@@ -207,7 +217,7 @@ body {
 .cat-adventure { color: #10b981; }
 .cat-shopping { color: #ec4899; }
 .cat-culture { color: #8b5cf6; }
-.cat-nightlife { color: #d97706; }
+.cat-nightlife { color: #C98E63; }
 .cat-wellness { color: #14b8a6; }
 .cat-transport { color: #64748b; }
 
@@ -226,18 +236,18 @@ body {
   cursor: pointer;
 }
 .sidebar-link:hover { background: rgba(0,0,0,0.04); color: var(--color-text); }
-.sidebar-link.active { background: rgba(217,119,6,0.1); color: #b45309; border-left: 2px solid #d97706; }
+.sidebar-link.active { background: rgba(237,191,155,0.2); color: #88522E; border-left: 2px solid #EDBF9B; }
 
 /* Cost tier chips */
 .tier-budget { background: rgba(34,197,94,0.1); color: #15803d; }
-.tier-mid-range { background: rgba(217,119,6,0.1); color: #b45309; }
+.tier-mid-range { background: rgba(237,191,155,0.18); color: #88522E; }
 .tier-luxury { background: rgba(168,85,247,0.1); color: #7e22ce; }
 
 /* Trip status chips */
 .status-upcoming { background: rgba(59,130,246,0.1); color: #1d4ed8; }
 .status-ongoing { background: rgba(34,197,94,0.1); color: #15803d; }
 .status-completed { background: rgba(100,116,139,0.1); color: #334155; }
-.status-draft { background: rgba(217,119,6,0.1); color: #b45309; }
+.status-draft { background: rgba(237,191,155,0.18); color: #88522E; }
 
 /* Image overlay gradient */
 .img-overlay {
@@ -257,6 +267,18 @@ body {
   --color-gt-surface: rgba(0,0,0,0.03);
   --color-gt-text: #0f172a;
   --color-gt-muted: #64748b;
-  --color-gt-amber: #d97706;
+  --color-gt-amber: #EDBF9B;
   --color-gt-border: rgba(0,0,0,0.08);
+  --color-accent: #EDBF9B;
+
+  --color-amber-50: #FCF7F3;
+  --color-amber-100: #F8EEE6;
+  --color-amber-200: #F4D5BD;
+  --color-amber-300: #EEBD98;
+  --color-amber-400: #E7A977;
+  --color-amber-500: #EDBF9B;
+  --color-amber-600: #C98E63;
+  --color-amber-700: #A86E44;
+  --color-amber-800: #88522E;
+  --color-amber-900: #6B3D1E;
 }

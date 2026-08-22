@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -147,7 +147,11 @@ function TripCard({ trip, onDelete }: { trip: Trip; onDelete: (id: string) => vo
 }
 
 export default function TripsPage() {
-  const { trips, deleteTrip } = useItineraryStore();
+  const { trips, deleteTrip, fetchTrips } = useItineraryStore();
+
+  useEffect(() => {
+    fetchTrips();
+  }, [fetchTrips]);
   const [filter, setFilter] = useState<FilterTab>('all');
   const [search, setSearch] = useState('');
 

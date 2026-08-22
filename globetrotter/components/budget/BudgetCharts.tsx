@@ -6,7 +6,7 @@ import {
 } from 'recharts';
 import type { Trip } from '@/types';
 
-const COLORS = ['#f59e0b', '#60a5fa', '#34d399', '#f472b6', '#a78bfa'];
+const COLORS = ['#EDBF9B', '#60a5fa', '#34d399', '#f472b6', '#a78bfa'];
 
 const RADIAN = Math.PI / 180;
 const renderLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }: any) => {
@@ -111,7 +111,7 @@ export default function BudgetCharts({ trip }: { trip: Trip }) {
               />
               <Tooltip content={<CustomTooltip />} />
               <Legend formatter={(value) => <span style={{ color: '#64748b', fontSize: 12 }}>{value}</span>} />
-              <Bar dataKey="Activities" fill="#f59e0b" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="Activities" fill="#EDBF9B" radius={[4, 4, 0, 0]} />
               <Bar dataKey="Budget" fill="#60a5fa" radius={[4, 4, 0, 0]} opacity={0.5} />
             </BarChart>
           </ResponsiveContainer>

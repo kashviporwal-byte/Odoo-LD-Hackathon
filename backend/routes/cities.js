@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const { authMiddleware } = require('../middleware/authMiddleware');
+const { optionalAuthMiddleware } = require('../middleware/authMiddleware');
 const db = require('../config/db');
 const { seedCities } = require('../scripts/seedCities');
 
-// Protected city routes
-router.use(authMiddleware);
+// Allow optional auth for city discovery
+router.use(optionalAuthMiddleware);
 
 /**
  * @route   GET /api/cities

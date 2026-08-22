@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const { authMiddleware } = require('../middleware/authMiddleware');
+const { optionalAuthMiddleware } = require('../middleware/authMiddleware');
 const db = require('../config/db');
 const { seedActivities } = require('../scripts/seedActivities');
 
-// Secure all activities endpoints
-router.use(authMiddleware);
+// Allow optional auth for activities exploration
+router.use(optionalAuthMiddleware);
 
 /**
  * @route   GET /api/activities/cities/:cityId

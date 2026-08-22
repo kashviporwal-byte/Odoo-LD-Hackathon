@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import {
@@ -132,7 +133,11 @@ function CityCard({ city, index }: { city: typeof mockCities[0]; index: number }
 
 export default function DashboardPage() {
   const { user } = useAuthStore();
-  const { trips } = useItineraryStore();
+  const { trips, fetchTrips } = useItineraryStore();
+
+  useEffect(() => {
+    fetchTrips();
+  }, [fetchTrips]);
 
   const firstName = user?.name?.split(' ')[0] ?? 'Traveler';
   const upcoming = trips.filter((t) => t.status === 'upcoming' || t.status === 'draft');
@@ -157,7 +162,7 @@ export default function DashboardPage() {
             animate={{ opacity: 1, y: 0 }}
           >
             Where to next,{' '}
-            <span className="gradient-text">{firstName}?</span>
+            <span className="text-[#EDBF9B]">{firstName}?</span>
           </motion.h1>
           <p className="text-slate-500 mt-1.5">Plan, discover, and share your perfect journey.</p>
         </div>
