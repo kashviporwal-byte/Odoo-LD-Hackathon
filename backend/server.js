@@ -3,8 +3,8 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
-const apiRoutes = require('./routes');
-const errorHandler = require('./middleware/errorMiddleware');
+const apiRoutes = require('./src/routes');
+const errorHandler = require('./src/middleware/errorMiddleware');
 
 const app = express();
 const PORT = process.env.PORT || 5000;

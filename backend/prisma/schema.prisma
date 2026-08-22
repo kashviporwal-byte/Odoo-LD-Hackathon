@@ -1,0 +1,123 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  name         String
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  photoUrl     String?  @map("photo_url")
+  language     String   @default("en")
+  role         String   @default("user")
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at")
+  trips        Trip[]
+
+  @@map("users")
+}
+
+model Trip {
+  id             Int      @id @default(autoincrement())
+  userId         Int      @map("user_id")
+  name           String
+  startDate      DateTime @map("start_date") @db.Date
+  endDate        DateTime @map("end_date") @db.Date
+  description    String?
+  coverPhotoUrl  String?  @map("cover_photo_url")
+  isPublic       Boolean  @default(false) @map("is_public")
+  shareSlug      String?  @unique @map("share_slug")
+  createdAt      DateTime @default(now()) @map("created_at")
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stops          Stop[]
+  budget         Budget?
+
+  @@index([userId])
+  @@map("trips")
+}
+
+model City {
+  id              Int        @id @default(autoincrement())
+  name            String
+  country         String
+  lat             Decimal    @db.Decimal(10, 8)
+  lng             Decimal    @db.Decimal(11, 8)
+  costIndex       Int        @default(2) @map("cost_index")
+  popularityScore Int        @default(1) @map("popularity")
+  region          String?
+  imageUrl        String?    @map("image_url")
+  stops           Stop[]
+  activities      Activity[]
+
+  @@map("cities")
+}
+
+model Stop {
+  id             Int            @id @default(autoincrement())
+  tripId         Int            @map("trip_id")
+  cityId         Int            @map("city_id")
+  arrivalDate    DateTime?      @map("arrival_date") @db.Date
+  departureDate  DateTime?      @map("departure_date") @db.Date
+  stopOrder      Int            @map("stop_order")
+  trip           Trip           @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  city           City           @relation(fields: [cityId], references: [id], onDelete: Cascade)
+  tripActivities TripActivity[]
+
+  @@index([tripId])
+  @@index([cityId])
+  @@map("stops")
+}
+
+model Activity {
+  id              Int            @id @default(autoincrement())
+  cityId          Int            @map("city_id")
+  name            String
+  category        String
+  description     String?
+  imageUrl        String?        @map("image_url")
+  estCost         Decimal        @default(0.00) @map("est_cost") @db.Decimal(10, 2)
+  estDurationMins Int?           @map("est_duration_mins")
+  city            City           @relation(fields: [cityId], references: [id], onDelete: Cascade)
+  tripActivities  TripActivity[]
+
+  @@index([cityId])
+  @@map("activities")
+}
+
+model TripActivity {
+  id            Int       @id @default(autoincrement())
+  stopId        Int       @map("stop_id")
+  activityId    Int       @map("activity_id")
+  dayNumber     Int       @map("day_number")
+  timeSlot      String    @map("time_slot")
+  cost          Decimal   @default(0.00) @db.Decimal(10, 2)
+  scheduledDate DateTime? @map("scheduled_date") @db.Date
+  scheduledTime String?   @map("scheduled_time")
+  costOverride  Decimal?  @map("cost_override") @db.Decimal(10, 2)
+  notes         String?
+  stop          Stop      @relation(fields: [stopId], references: [id], onDelete: Cascade)
+  activity      Activity  @relation(fields: [activityId], references: [id], onDelete: Cascade)
+
+  @@index([stopId])
+  @@index([activityId])
+  @@map("trip_activities")
+}
+
+model Budget {
+  id             Int     @id @default(autoincrement())
+  tripId         Int     @unique @map("trip_id")
+  transportCost  Decimal @default(0.00) @map("transport_cost") @db.Decimal(10, 2)
+  stayCost       Decimal @default(0.00) @map("stay_cost") @db.Decimal(10, 2)
+  activitiesCost Decimal @default(0.00) @map("activities_cost") @db.Decimal(10, 2)
+  mealsCost      Decimal @default(0.00) @map("meals_cost") @db.Decimal(10, 2)
+  currency       String  @default("USD")
+  trip           Trip    @relation(fields: [tripId], references: [id], onDelete: Cascade)
+
+  @@index([tripId])
+  @@map("budgets")
+}
