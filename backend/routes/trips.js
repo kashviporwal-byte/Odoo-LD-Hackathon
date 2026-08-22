@@ -32,29 +32,30 @@ router.post('/', async (req, res, next) => {
       return res.status(400).json({ success: false, error: 'Name, start date, and end date are required.' });
     }
 
-    // Insert trip details in Postgres
-    const result = await db.query(
-      `INSERT INTO trips (user_id, name, start_date, end_date, description, cover_photo_url)
-       VALUES ($1, $2, $3, $4, $5, $6)
-       RETURNING *`,
-      [
-        req.user.id,
-        name,
-        start_date,
-        end_date,
-        description || null,
-        cover_photo_url || 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=800',
-      ]
-    );
+    const defaultCover = cover_photo_url || 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=800';
 
-    const trip = result.rows[0];
+    // 1. Insert trip details
+    const result = await db.query(
+      `INSERT INTO trips(user_id, name, start_date, end_date, description, cover_photo_url) 
+       VALUES ($1, $2, $3, $4, $5, $6) 
+       RETURNING id, name, to_char(start_date, 'YYYY-MM-DD') as start_date, to_char(end_date, 'YYYY-MM-DD') as end_date, description, cover_photo_url, is_public, share_slug`,
+      [req.user.id, name, start_date, end_date, description, defaultCover]
+    );
+    const newTrip = result.rows[0];
+
+    // 2. Initialize default budget row for Person C
+    await db.query(
+      `INSERT INTO budgets(trip_id, transport_cost, stay_cost, activities_cost, meals_cost, currency) 
+       VALUES ($1, 0.00, 0.00, 0.00, 0.00, 'USD')`,
+      [newTrip.id]
+    );
 
     res.status(201).json({
       success: true,
       message: 'Trip created successfully.',
       data: {
-        trip,
-      },
+        trip: newTrip
+      }
     });
   } catch (error) {
     next(error);
@@ -69,21 +70,20 @@ router.post('/', async (req, res, next) => {
 router.get('/', async (req, res, next) => {
   try {
     const result = await db.query(
-      `SELECT t.*, COUNT(s.id) as destination_count
-       FROM trips t
-       LEFT JOIN stops s ON t.id = s.trip_id
-       WHERE t.user_id = $1
-       GROUP BY t.id
+      `SELECT t.id, t.name, to_char(t.start_date, 'YYYY-MM-DD') as start_date, to_char(t.end_date, 'YYYY-MM-DD') as end_date, 
+              t.description, t.cover_photo_url, t.is_public, t.share_slug, 
+              COALESCE(COUNT(s.id)::int, 0) as destination_count 
+       FROM trips t 
+       LEFT JOIN stops s ON t.id = s.trip_id 
+       WHERE t.user_id = $1 
+       GROUP BY t.id 
        ORDER BY t.created_at DESC`,
       [req.user.id]
     );
 
     res.status(200).json({
       success: true,
-      data: result.rows.map((t) => ({
-        ...t,
-        destination_count: parseInt(t.destination_count || 0, 10),
-      })),
+      data: result.rows
     });
   } catch (error) {
     next(error);
@@ -99,17 +99,79 @@ router.get('/:id', async (req, res, next) => {
   const { id } = req.params;
 
   try {
-    const result = await db.query('SELECT * FROM trips WHERE id = $1', [id]);
+    // 1. Fetch trip
+    const tripResult = await db.query(
+      `SELECT id, user_id, name, to_char(start_date, 'YYYY-MM-DD') as start_date, to_char(end_date, 'YYYY-MM-DD') as end_date, 
+              description, cover_photo_url, is_public, share_slug 
+       FROM trips 
+       WHERE id = $1 AND user_id = $2`,
+      [id, req.user.id]
+    );
 
-    if (!result.rows || result.rows.length === 0) {
+    if (tripResult.rows.length === 0) {
       return res.status(404).json({ success: false, error: 'Trip not found.' });
     }
+
+    const trip = tripResult.rows[0];
+    trip.share_token = trip.share_slug; // compatibility mapping
+
+    // 2. Fetch stops for this trip, including city details (maps to route array on frontend)
+    const stopsResult = await db.query(
+      `SELECT s.id, s.trip_id, s.city_id, s.stop_order as order_index, 
+              to_char(s.arrival_date, 'YYYY-MM-DD') as start_date, 
+              to_char(s.departure_date, 'YYYY-MM-DD') as end_date,
+              c.name as "cityName", c.country, c.lat, c.lng, c.image_url, c.region, c.cost_index, c.popularity
+       FROM stops s
+       JOIN cities c ON s.city_id = c.id
+       WHERE s.trip_id = $1
+       ORDER BY s.stop_order ASC`,
+      [id]
+    );
+
+    // 3. Fetch budget
+    const budgetResult = await db.query(
+      `SELECT id, trip_id, transport_cost, stay_cost, activities_cost, meals_cost, currency 
+       FROM budgets 
+       WHERE trip_id = $1`,
+      [id]
+    );
+    const budget = budgetResult.rows[0] || {
+      transport_cost: 0.00,
+      stay_cost: 0.00,
+      activities_cost: 0.00,
+      meals_cost: 0.00,
+      currency: 'USD'
+    };
+
+    // 4. Fetch activities for these stops
+    const stopIds = stopsResult.rows.map(s => s.id);
+    let activities = [];
+    if (stopIds.length > 0) {
+      const actResult = await db.query(
+        `SELECT ta.id, ta.stop_id, ta.activity_id, ta.day_number, ta.time_slot, ta.cost, 
+                to_char(ta.scheduled_date, 'YYYY-MM-DD') as scheduled_date, ta.scheduled_time, ta.cost_override, ta.notes,
+                a.name, a.category, a.description, a.image_url, a.est_cost, a.est_duration_mins
+         FROM trip_activities ta
+         JOIN activities a ON ta.activity_id = a.id
+         WHERE ta.stop_id = ANY($1)`,
+        [stopIds]
+      );
+      activities = actResult.rows;
+    }
+
+    // Nest activities into stops
+    const stopsWithActivities = stopsResult.rows.map(stop => ({
+      ...stop,
+      activities: activities.filter(act => act.stop_id === stop.id)
+    }));
 
     res.status(200).json({
       success: true,
       data: {
-        trip: result.rows[0],
-      },
+        trip,
+        stops: stopsWithActivities,
+        budget
+      }
     });
   } catch (error) {
     next(error);
@@ -123,31 +185,37 @@ router.get('/:id', async (req, res, next) => {
  */
 router.put('/:id', async (req, res, next) => {
   const { id } = req.params;
-  const { name, start_date, end_date, description, cover_photo_url } = req.body;
+  const { name, start_date, end_date, description, cover_photo_url, is_public, share_slug } = req.body;
 
   try {
-    const result = await db.query(
-      `UPDATE trips
-       SET name = COALESCE($1, name),
-           start_date = COALESCE($2, start_date),
-           end_date = COALESCE($3, end_date),
-           description = COALESCE($4, description),
-           cover_photo_url = COALESCE($5, cover_photo_url)
-       WHERE id = $6
-       RETURNING *`,
-      [name, start_date, end_date, description, cover_photo_url, id]
-    );
-
-    if (!result.rows || result.rows.length === 0) {
+    const currentTripRes = await db.query('SELECT * FROM trips WHERE id = $1 AND user_id = $2', [id, req.user.id]);
+    if (currentTripRes.rows.length === 0) {
       return res.status(404).json({ success: false, error: 'Trip not found.' });
     }
+
+    const current = currentTripRes.rows[0];
+    const newName = name !== undefined ? name : current.name;
+    const newStart = start_date !== undefined ? start_date : current.start_date;
+    const newEnd = end_date !== undefined ? end_date : current.end_date;
+    const newDesc = description !== undefined ? description : current.description;
+    const newCover = cover_photo_url !== undefined ? cover_photo_url : current.cover_photo_url;
+    const newPublic = is_public !== undefined ? is_public : current.is_public;
+    const newSlug = share_slug !== undefined ? share_slug : current.share_slug;
+
+    const result = await db.query(
+      `UPDATE trips 
+       SET name = $1, start_date = $2, end_date = $3, description = $4, cover_photo_url = $5, is_public = $6, share_slug = $7
+       WHERE id = $8 AND user_id = $9 
+       RETURNING id, name, to_char(start_date, 'YYYY-MM-DD') as start_date, to_char(end_date, 'YYYY-MM-DD') as end_date, description, cover_photo_url, is_public, share_slug`,
+      [newName, newStart, newEnd, newDesc, newCover, newPublic, newSlug, id, req.user.id]
+    );
 
     res.status(200).json({
       success: true,
       message: 'Trip updated successfully.',
       data: {
-        trip: result.rows[0],
-      },
+        trip: result.rows[0]
+      }
     });
   } catch (error) {
     next(error);
@@ -163,9 +231,8 @@ router.delete('/:id', async (req, res, next) => {
   const { id } = req.params;
 
   try {
-    const result = await db.query('DELETE FROM trips WHERE id = $1 RETURNING id', [id]);
-
-    if (!result.rows || result.rows.length === 0) {
+    const result = await db.query('DELETE FROM trips WHERE id = $1 AND user_id = $2', [id, req.user.id]);
+    if (result.rowCount === 0) {
       return res.status(404).json({ success: false, error: 'Trip not found.' });
     }
 
@@ -189,12 +256,13 @@ router.post('/upload-cover', upload.single('cover'), async (req, res, next) => {
       return res.status(400).json({ success: false, error: 'Please upload a image file.' });
     }
 
+    // Returning a stock URL for simple local simulation
     const fileUrl = 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=800';
 
     res.status(200).json({
       success: true,
-      message: 'File uploaded successfully (Mock Cloudinary URL generated).',
-      cover_photo_url: fileUrl,
+      message: 'File uploaded successfully.',
+      cover_photo_url: fileUrl
     });
   } catch (error) {
     next(error);

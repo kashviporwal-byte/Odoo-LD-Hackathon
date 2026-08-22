@@ -19,6 +19,7 @@ import Timeline from './pages/Timeline';
 import PublicItinerary from './pages/PublicItinerary';
 import ProfileSettings from './pages/ProfileSettings';
 import AdminDashboard from './pages/AdminDashboard';
+import AiAssistant from './pages/AiAssistant';
 
 function App() {
   return (
@@ -111,6 +112,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <ProfileSettings />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/ai-assistant" 
+                element={
+                  <ProtectedRoute>
+                    <AiAssistant />
                   </ProtectedRoute>
                 } 
               />

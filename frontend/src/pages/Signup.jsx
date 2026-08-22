@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
@@ -9,7 +9,8 @@ const Signup = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signup } = useAuth();
+
+  const { signup, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -30,6 +31,36 @@ const Signup = () => {
       setError(res.error || 'Failed to register account.');
     }
   };
+
+  const handleGoogleLogin = async (credential) => {
+    setError('');
+    setLoading(true);
+
+    const res = await loginWithGoogle(credential);
+    setLoading(false);
+
+    if (res.success) {
+      navigate('/dashboard');
+    } else {
+      setError(res.error || 'Google Authentication failed.');
+    }
+  };
+
+  useEffect(() => {
+    /* global google */
+    if (window.google && window.google.accounts) {
+      window.google.accounts.id.initialize({
+        client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID || "833934089494-0e5j6c4qmoa4vls4fh78r95nq7u5oa9e.apps.googleusercontent.com",
+        callback: (response) => {
+          handleGoogleLogin(response.credential);
+        }
+      });
+      window.google.accounts.id.renderButton(
+        document.getElementById("googleSignUpDiv"),
+        { theme: "outline", size: "large", width: 380 }
+      );
+    }
+  }, []);
 
   return (
     <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -94,14 +125,28 @@ const Signup = () => {
             </div>
           </div>
 
-          <div>
+          <div className="space-y-4">
             <button
               type="submit"
               disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 font-bold transition"
             >
               {loading ? 'Creating...' : 'Register'}
             </button>
+
+            <div className="relative flex py-2 items-center">
+              <div className="flex-grow border-t border-gray-200"></div>
+              <span className="flex-shrink mx-4 text-gray-400 text-xs font-semibold uppercase">Or continue with</span>
+              <div className="flex-grow border-t border-gray-200"></div>
+            </div>
+
+            {/* Official Google Identity Services Button Container */}
+            <div className="w-full flex flex-col items-center gap-2">
+              <div id="googleSignUpDiv" className="w-full flex justify-center"></div>
+              <span className="text-[10px] text-gray-400 text-center block">
+                🔑 Note: Configure VITE_GOOGLE_CLIENT_ID in your frontend .env
+              </span>
+            </div>
           </div>
         </form>
       </div>
