@@ -219,4 +219,41 @@ router.post('/:tripId', async (req, res, next) => {
   }
 });
 
+// Route aliases for /api/budget/trip/:tripId
+router.get('/trip/:tripId', async (req, res, next) => {
+  req.url = `/${req.params.tripId}`;
+  router.handle(req, res, next);
+});
+
+router.put('/trip/:tripId', async (req, res, next) => {
+  req.url = `/${req.params.tripId}`;
+  router.handle(req, res, next);
+});
+
+router.put('/:tripId', async (req, res, next) => {
+  const { tripId } = req.params;
+  const { transport_cost = 0, stay_cost = 0, activities_cost = 0, meals_cost = 0 } = req.body;
+  try {
+    await db.query(
+      `INSERT INTO budgets (trip_id, transport_cost, stay_cost, activities_cost, meals_cost)
+       VALUES ($1, $2, $3, $4, $5)`,
+      [tripId, transport_cost, stay_cost, activities_cost, meals_cost]
+    );
+    res.status(200).json({
+      success: true,
+      message: 'Budget parameters updated successfully.',
+      data: {
+        budget: {
+          transport_cost,
+          stay_cost,
+          activities_cost,
+          meals_cost,
+        }
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
 module.exports = router;

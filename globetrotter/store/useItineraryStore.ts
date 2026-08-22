@@ -81,11 +81,12 @@ export const useItineraryStore = create<ItineraryState>((set, get) => ({
 
   addTrip: (trip) => {
     set((s) => ({ trips: [...s.trips, trip] }));
-    // Asynchronously synchronize with backend and update the trip ID
+    const startDate = (trip as any).startDate || trip.stops[0]?.startDate || '2026-06-01';
+    const endDate = (trip as any).endDate || trip.stops[trip.stops.length - 1]?.endDate || '2026-06-15';
     tripsApi.createTrip({
       name: trip.name,
-      start_date: trip.stops[0]?.startDate || '2026-06-01',
-      end_date: trip.stops[trip.stops.length - 1]?.endDate || '2026-06-15',
+      start_date: startDate,
+      end_date: endDate,
       description: trip.description,
       cover_photo_url: trip.coverPhoto,
     }).then((res) => {

@@ -665,4 +665,53 @@ router.patch('/:tripId/activities/:id', async (req, res, next) => {
   }
 });
 
+/**
+ * @route   POST /api/trips/:tripId/stops/:stopId/activities
+ * @desc    Alias to add activity to a stop under trip route hierarchy
+ */
+router.post('/:tripId/stops/:stopId/activities', async (req, res, next) => {
+  const { stopId } = req.params;
+  const { activity_id, day_number = 1, time_slot = 'morning', cost, custom_name, notes } = req.body;
+
+  try {
+    if (!activity_id && !custom_name) {
+      return res.status(400).json({ success: false, error: 'Either activity_id or custom_name is required.' });
+    }
+
+    let finalCost = cost !== undefined ? parseFloat(cost) : 0.00;
+    if (activity_id && cost === undefined) {
+      const actCheck = await db.query('SELECT cost, name FROM activities WHERE id = $1', [activity_id]);
+      if (actCheck.rows && actCheck.rows.length > 0) {
+        finalCost = parseFloat(actCheck.rows[0].cost || 0);
+      }
+    }
+
+    const insertSql = `
+      INSERT INTO trip_activities (stop_id, activity_id, day_number, time_slot, cost, custom_name, notes)
+      VALUES ($1, $2, $3, $4, $5, $6, $7)
+      RETURNING *
+    `;
+    const insertResult = await db.query(insertSql, [
+      parseInt(stopId, 10),
+      activity_id ? parseInt(activity_id, 10) : null,
+      parseInt(day_number, 10) || 1,
+      time_slot || 'morning',
+      finalCost,
+      custom_name || null,
+      notes || null,
+    ]);
+
+    res.status(201).json({
+      success: true,
+      message: 'Activity linked to stop successfully.',
+      data: {
+        ...insertResult.rows[0],
+        cost: parseFloat(insertResult.rows[0].cost),
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
 module.exports = router;

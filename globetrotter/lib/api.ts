@@ -164,13 +164,13 @@ export const tripsApi = {
     stopId: string | number,
     activityData: { activity_id: number; day_number?: number; time_slot?: string; cost_override?: number; notes?: string }
   ) =>
-    request<{ activity: any }>(`/trips/${tripId}/stops/${stopId}/activities`, {
+    request<{ activity: any }>(`/activities/stops/${stopId}`, {
       method: 'POST',
       body: JSON.stringify(activityData),
     }),
 
   removeActivity: (tripId: string | number, stopId: string | number, activityId: string | number) =>
-    request(`/trips/${tripId}/stops/${stopId}/activities/${activityId}`, {
+    request(`/activities/stops/${stopId}/activities/${activityId}`, {
       method: 'DELETE',
     }),
 };

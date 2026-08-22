@@ -88,7 +88,7 @@ export default function NewTripPage() {
     setGlobeCoords({ lat, lng });
     setShowGlobe(true);
 
-    const newTrip: Trip = {
+    const newTrip: Trip & { startDate?: string; endDate?: string } = {
       id: `trip-${Date.now()}`,
       name: form.name,
       description: form.description,
@@ -103,6 +103,8 @@ export default function NewTripPage() {
       updatedAt: new Date().toISOString(),
       shareSlug: form.name.toLowerCase().replace(/\s+/g, '-') + '-' + Date.now(),
       tags: [],
+      startDate: form.startDate,
+      endDate: form.endDate,
     };
     addTrip(newTrip);
 
