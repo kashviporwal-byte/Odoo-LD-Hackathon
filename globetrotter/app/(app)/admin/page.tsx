@@ -25,9 +25,9 @@ function StatCard({ stat, index }: { stat: AnalyticsStat; index: number }) {
       transition={{ delay: index * 0.05 }}
       className="glass p-5 rounded-xl"
     >
-      <p className="text-gt-muted text-xs mb-2">{stat.label}</p>
+      <p className="text-slate-500 text-xs mb-2">{stat.label}</p>
       <p className="font-bold text-2xl gradient-text">{typeof stat.value === 'number' ? stat.value.toLocaleString() : stat.value}</p>
-      <div className={`flex items-center gap-1 mt-1 text-xs font-semibold ${stat.trend === 'up' ? 'text-green-400' : stat.trend === 'down' ? 'text-red-400' : 'text-gt-muted'}`}>
+      <div className={`flex items-center gap-1 mt-1 text-xs font-semibold ${stat.trend === 'up' ? 'text-green-400' : stat.trend === 'down' ? 'text-red-400' : 'text-slate-500'}`}>
         <TrendIcon className="w-3.5 h-3.5" />
         {Math.abs(stat.change)}% vs last month
       </div>
@@ -48,13 +48,13 @@ export default function AdminPage() {
         </div>
         <div>
           <h1 className="font-display text-3xl font-bold">Admin Dashboard</h1>
-          <p className="text-gt-muted text-sm">Platform analytics & management</p>
+          <p className="text-slate-500 text-sm">Platform analytics & management</p>
         </div>
       </div>
 
       {/* Disclaimer */}
-      <div className="glass-light p-3 rounded-xl mb-6 text-xs text-gt-muted flex items-center gap-2 mt-4">
-        <Activity className="w-4 h-4 text-amber-400 flex-shrink-0" />
+      <div className="glass-light p-3 rounded-xl mb-6 text-xs text-slate-500 flex items-center gap-2 mt-4">
+        <Activity className="w-4 h-4 text-amber-600 flex-shrink-0" />
         Demo data only — all metrics are illustrative for the hackathon prototype.
       </div>
 
@@ -73,27 +73,27 @@ export default function AdminPage() {
       {/* Top Cities */}
       <div className="glass rounded-2xl p-5 mb-6">
         <h2 className="font-display text-lg font-bold mb-4 flex items-center gap-2">
-          <Globe className="w-5 h-5 text-amber-400" /> Top Destinations
+          <Globe className="w-5 h-5 text-amber-600" /> Top Destinations
         </h2>
         <div className="space-y-3">
           {topCities.map((city, i) => (
             <div key={city.id} className="flex items-center gap-3">
-              <span className="text-gt-muted text-sm w-5">{i + 1}</span>
+              <span className="text-slate-500 text-sm w-5">{i + 1}</span>
               <div className="w-8 h-8 rounded-lg overflow-hidden flex-shrink-0">
                 <img src={city.coverPhoto} alt={city.name} className="w-full h-full object-cover" />
               </div>
               <div className="flex-1">
                 <p className="text-sm font-semibold">{city.name}</p>
-                <p className="text-xs text-gt-muted">{city.country} · {city.region}</p>
+                <p className="text-xs text-slate-500">{city.country} · {city.region}</p>
               </div>
               <div className="text-right">
-                <div className="w-28 h-1.5 bg-white/[0.06] rounded-full">
+                <div className="w-28 h-1.5 bg-black/[0.04] rounded-full">
                   <div
                     className="h-full bg-amber-500 rounded-full"
                     style={{ width: `${city.popularityScore}%` }}
                   />
                 </div>
-                <p className="text-xs text-gt-muted mt-0.5">{city.popularityScore}/100</p>
+                <p className="text-xs text-slate-500 mt-0.5">{city.popularityScore}/100</p>
               </div>
             </div>
           ))}
@@ -103,12 +103,12 @@ export default function AdminPage() {
       {/* Users Table */}
       <div className="glass rounded-2xl p-5">
         <h2 className="font-display text-lg font-bold mb-4 flex items-center gap-2">
-          <Users className="w-5 h-5 text-amber-400" /> Recent Users
+          <Users className="w-5 h-5 text-amber-600" /> Recent Users
         </h2>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-gt-muted text-xs border-b border-white/[0.06]">
+              <tr className="text-slate-500 text-xs border-b border-white/[0.06]">
                 <th className="text-left pb-3 font-medium">User</th>
                 <th className="text-left pb-3 font-medium hidden sm:table-cell">Email</th>
                 <th className="text-center pb-3 font-medium">Trips</th>
@@ -127,20 +127,20 @@ export default function AdminPage() {
                 >
                   <td className="py-3">
                     <div className="flex items-center gap-2">
-                      <div className="w-7 h-7 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-400 text-xs font-bold flex-shrink-0">
+                      <div className="w-7 h-7 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-600 text-xs font-bold flex-shrink-0">
                         {u.name[0]}
                       </div>
                       <span className="font-medium">{u.name}</span>
                     </div>
                   </td>
-                  <td className="py-3 text-gt-muted hidden sm:table-cell">{u.email}</td>
-                  <td className="py-3 text-center font-bold text-amber-400">{u.tripsCount}</td>
+                  <td className="py-3 text-slate-500 hidden sm:table-cell">{u.email}</td>
+                  <td className="py-3 text-center font-bold text-amber-600">{u.tripsCount}</td>
                   <td className="py-3 text-center">
                     <span className={`badge text-xs ${u.status === 'active' ? 'badge-green' : u.status === 'banned' ? 'badge-red' : 'badge-amber'}`}>
                       {u.status}
                     </span>
                   </td>
-                  <td className="py-3 text-right text-gt-muted text-xs hidden md:table-cell">
+                  <td className="py-3 text-right text-slate-500 text-xs hidden md:table-cell">
                     {u.joinedAt.split('T')[0]}
                   </td>
                 </motion.tr>

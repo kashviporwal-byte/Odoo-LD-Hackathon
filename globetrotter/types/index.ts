@@ -89,6 +89,8 @@ export interface CityMeta {
   country: string;
   countryCode: string;
   region: Region;
+  lat?: number;
+  lng?: number;
   costIndex: number; // 1-10 (10 = most expensive)
   costTier: CostTier;
   popularityScore: number; // 1-100

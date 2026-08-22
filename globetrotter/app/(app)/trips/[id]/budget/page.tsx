@@ -44,22 +44,22 @@ export default function BudgetPage({ params }: { params: Promise<{ id: string }>
         </Link>
         <div>
           <h1 className="font-display text-2xl font-bold">Budget & Cost Breakdown</h1>
-          <p className="text-gt-muted text-sm">{trip.name}</p>
+          <p className="text-slate-500 text-sm">{trip.name}</p>
         </div>
       </div>
 
       {/* Summary Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
         {[
-          { label: 'Total Budget', value: `$${budget.toLocaleString()}`, color: 'text-amber-400', sub: 'Your set limit' },
+          { label: 'Total Budget', value: `$${budget.toLocaleString()}`, color: 'text-amber-600', sub: 'Your set limit' },
           { label: 'Total Spent', value: `$${totalSpent.toLocaleString()}`, color: 'text-blue-400', sub: 'Planned expenses' },
           { label: 'Remaining', value: `$${Math.abs(remaining).toLocaleString()}`, color: overBudget ? 'text-red-400' : 'text-green-400', sub: overBudget ? 'Over budget!' : 'Left to spend' },
           { label: 'Activity Cost', value: `$${activityCost.toLocaleString()}`, color: 'text-purple-400', sub: 'From activities' },
         ].map(({ label, value, color, sub }) => (
           <div key={label} className="glass p-4 rounded-xl">
-            <p className="text-gt-muted text-xs mb-1">{label}</p>
+            <p className="text-slate-500 text-xs mb-1">{label}</p>
             <p className={`font-bold text-xl ${color}`}>{value}</p>
-            <p className="text-xs text-gt-muted mt-0.5">{sub}</p>
+            <p className="text-xs text-slate-500 mt-0.5">{sub}</p>
           </div>
         ))}
       </div>
@@ -68,11 +68,11 @@ export default function BudgetPage({ params }: { params: Promise<{ id: string }>
       <div className="glass p-5 rounded-2xl mb-6">
         <div className="flex items-center justify-between mb-2">
           <p className="text-sm font-medium">Budget used</p>
-          <p className={`text-sm font-bold ${overBudget ? 'text-red-400' : 'text-amber-400'}`}>
+          <p className={`text-sm font-bold ${overBudget ? 'text-red-400' : 'text-amber-600'}`}>
             {Math.round((totalSpent / budget) * 100)}%
           </p>
         </div>
-        <div className="h-3 bg-white/[0.06] rounded-full overflow-hidden">
+        <div className="h-3 bg-black/[0.04] rounded-full overflow-hidden">
           <div
             className={`h-full rounded-full transition-all duration-1000 ${overBudget ? 'bg-red-500' : 'bg-gradient-to-r from-amber-500 to-amber-300'}`}
             style={{ width: `${Math.min(100, (totalSpent / budget) * 100)}%` }}
@@ -108,9 +108,9 @@ export default function BudgetPage({ params }: { params: Promise<{ id: string }>
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-sm font-medium">{label}</span>
-                    <span className="text-sm font-bold">${val.toLocaleString()} <span className="text-gt-muted font-normal text-xs">({pct}%)</span></span>
+                    <span className="text-sm font-bold">${val.toLocaleString()} <span className="text-slate-500 font-normal text-xs">({pct}%)</span></span>
                   </div>
-                  <div className="h-1.5 bg-white/[0.06] rounded-full">
+                  <div className="h-1.5 bg-black/[0.04] rounded-full">
                     <div className="h-full bg-amber-500/60 rounded-full" style={{ width: `${pct}%` }} />
                   </div>
                 </div>
@@ -139,11 +139,11 @@ export default function BudgetPage({ params }: { params: Promise<{ id: string }>
                 </div>
                 <div className="flex-1">
                   <p className="text-sm font-semibold">{stop.city}</p>
-                  <p className="text-xs text-gt-muted">{nights} nights · {stop.activities.length} activities</p>
+                  <p className="text-xs text-slate-500">{nights} nights · {stop.activities.length} activities</p>
                 </div>
                 <div className="text-right">
-                  <p className="font-bold text-sm text-amber-400">${cost.toLocaleString()}</p>
-                  <p className="text-xs text-gt-muted">${nights > 0 ? Math.round(cost / nights) : 0}/night</p>
+                  <p className="font-bold text-sm text-amber-600">${cost.toLocaleString()}</p>
+                  <p className="text-xs text-slate-500">${nights > 0 ? Math.round(cost / nights) : 0}/night</p>
                 </div>
               </div>
             );

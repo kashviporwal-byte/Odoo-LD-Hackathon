@@ -9,6 +9,7 @@ import {
   MapPin, Calendar, Loader2
 } from 'lucide-react';
 import { useItineraryStore } from '@/store/useItineraryStore';
+import { useGlobeStore } from '@/store/useGlobeStore';
 import { mockCities, mockActivities } from '@/lib/mockData';
 import type { CityStop, Activity, CityMeta } from '@/types';
 import { useDebounce } from 'use-debounce';
@@ -27,6 +28,7 @@ function AddStopModal({
   const [selected, setSelected] = useState<CityMeta | null>(null);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const openGlobe = useGlobeStore((s) => s.openGlobe);
 
   const results = debouncedSearch.length > 0
     ? mockCities.filter(
@@ -51,6 +53,8 @@ function AddStopModal({
       order: 0,
     };
     onAdd(stop);
+    // Fire the globe overlay on the newly added city's exact coordinates
+    openGlobe(selected.lat ?? 48.8566, selected.lng ?? 2.3522, selected.name);
     onClose();
   };
 
@@ -72,7 +76,7 @@ function AddStopModal({
       >
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-display text-xl font-bold">Add a Stop</h2>
-          <button onClick={onClose} className="text-gt-muted hover:text-gt-text transition-colors">
+          <button onClick={onClose} className="text-slate-500 hover:text-gt-text transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -80,7 +84,7 @@ function AddStopModal({
         {!selected ? (
           <>
             <div className="relative mb-4">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gt-muted" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
               <input
                 className="gt-input pl-10"
                 placeholder="Search cities..."
@@ -100,7 +104,7 @@ function AddStopModal({
                   <img src={city.coverPhoto} alt={city.name} className="w-10 h-10 rounded-lg object-cover flex-shrink-0" />
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-sm">{city.name}</p>
-                    <p className="text-gt-muted text-xs">{city.country} · ${city.avgDailyCostUSD}/day</p>
+                    <p className="text-slate-500 text-xs">{city.country} · ${city.avgDailyCostUSD}/day</p>
                   </div>
                   <span className={`badge text-xs ${city.costTier === 'budget' ? 'badge-green' : city.costTier === 'luxury' ? 'badge-purple' : 'badge-amber'}`}>
                     {city.costTier}
@@ -119,19 +123,19 @@ function AddStopModal({
               <img src={selected.coverPhoto} alt={selected.name} className="w-12 h-12 rounded-lg object-cover" />
               <div>
                 <p className="font-bold">{selected.name}</p>
-                <p className="text-gt-muted text-xs">{selected.country}</p>
+                <p className="text-slate-500 text-xs">{selected.country}</p>
               </div>
-              <button onClick={() => setSelected(null)} className="ml-auto text-gt-muted hover:text-gt-text">
+              <button onClick={() => setSelected(null)} className="ml-auto text-slate-500 hover:text-gt-text">
                 <X className="w-4 h-4" />
               </button>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs text-gt-muted mb-1">Arrival</label>
+                <label className="block text-xs text-slate-500 mb-1">Arrival</label>
                 <input type="date" className="gt-input text-sm" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
               </div>
               <div>
-                <label className="block text-xs text-gt-muted mb-1">Departure</label>
+                <label className="block text-xs text-slate-500 mb-1">Departure</label>
                 <input type="date" className="gt-input text-sm" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
               </div>
             </div>
@@ -192,10 +196,10 @@ function ActivityPicker({
       >
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-display text-lg font-bold">Add Activity</h2>
-          <button onClick={onClose} className="text-gt-muted hover:text-gt-text"><X className="w-5 h-5" /></button>
+          <button onClick={onClose} className="text-slate-500 hover:text-gt-text"><X className="w-5 h-5" /></button>
         </div>
         <div className="relative mb-4">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gt-muted" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
           <input className="gt-input pl-10 text-sm" placeholder="Search activities..." value={search} onChange={(e) => setSearch(e.target.value)} />
         </div>
         <div className="space-y-2">
@@ -206,7 +210,7 @@ function ActivityPicker({
                 {act.imageUrl && <img src={act.imageUrl} alt={act.name} className="w-10 h-10 rounded-lg object-cover flex-shrink-0" />}
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold truncate">{act.name}</p>
-                  <p className="text-xs text-gt-muted">{act.category} · {act.cost === 0 ? 'Free' : `$${act.cost}`}</p>
+                  <p className="text-xs text-slate-500">{act.category} · {act.cost === 0 ? 'Free' : `$${act.cost}`}</p>
                 </div>
                 <button
                   onClick={() => !added && onAdd(act)}
@@ -218,7 +222,7 @@ function ActivityPicker({
               </div>
             );
           })}
-          {filtered.length === 0 && <p className="text-gt-muted text-sm text-center py-6">No activities found</p>}
+          {filtered.length === 0 && <p className="text-slate-500 text-sm text-center py-6">No activities found</p>}
         </div>
       </motion.div>
     </motion.div>
@@ -243,15 +247,15 @@ function StopBlock({
     <>
       <div className="glass rounded-2xl overflow-hidden">
         <div className="flex items-center gap-3 p-4 border-b border-white/[0.06]">
-          <GripVertical className="w-5 h-5 text-gt-muted cursor-grab flex-shrink-0" />
+          <GripVertical className="w-5 h-5 text-slate-500 cursor-grab flex-shrink-0" />
           <div className="w-10 h-10 rounded-xl overflow-hidden flex-shrink-0">
             <img src={stop.coverPhoto || 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=200&q=80'} alt={stop.city} className="w-full h-full object-cover" />
           </div>
           <div className="flex-1 min-w-0">
             <h3 className="font-bold text-sm">{stop.city}, {stop.country}</h3>
-            <p className="text-xs text-gt-muted">{stop.startDate} → {stop.endDate}</p>
+            <p className="text-xs text-slate-500">{stop.startDate} → {stop.endDate}</p>
           </div>
-          <button onClick={() => onDelete(stop.id)} className="text-gt-muted hover:text-red-400 transition-colors ml-2">
+          <button onClick={() => onDelete(stop.id)} className="text-slate-500 hover:text-red-400 transition-colors ml-2">
             <Trash2 className="w-4 h-4" />
           </button>
         </div>
@@ -261,12 +265,12 @@ function StopBlock({
             <div key={act.id} className="flex items-center gap-2 p-2.5 glass-light rounded-lg group">
               <div className="flex-1 text-xs">
                 <span className="font-medium">{act.name}</span>
-                <span className="text-gt-muted ml-2">{act.category}</span>
+                <span className="text-slate-500 ml-2">{act.category}</span>
               </div>
               <span className="text-xs text-green-400">{act.cost === 0 ? 'Free' : `$${act.cost}`}</span>
               <button
                 onClick={() => removeActivity(tripId, stop.id, act.id)}
-                className="opacity-0 group-hover:opacity-100 text-gt-muted hover:text-red-400 transition-all"
+                className="opacity-0 group-hover:opacity-100 text-slate-500 hover:text-red-400 transition-all"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
@@ -274,7 +278,7 @@ function StopBlock({
           ))}
           <button
             onClick={() => setActivityPickerOpen(true)}
-            className="w-full p-2 dashed-border rounded-lg text-xs text-gt-muted hover:text-amber-400 transition-colors flex items-center justify-center gap-1.5 border border-dashed border-white/10 hover:border-amber-500/30"
+            className="w-full p-2 dashed-border rounded-lg text-xs text-slate-500 hover:text-amber-600 transition-colors flex items-center justify-center gap-1.5 border border-dashed border-black/10 hover:border-amber-500/30"
           >
             <Plus className="w-3.5 h-3.5" /> Add Activity
           </button>
@@ -343,7 +347,7 @@ export default function ItineraryBuilderPage({ params }: { params: Promise<{ id:
             </Link>
             <div>
               <h1 className="font-display text-2xl font-bold">{trip.name}</h1>
-              <p className="text-gt-muted text-sm">Itinerary Builder</p>
+              <p className="text-slate-500 text-sm">Itinerary Builder</p>
             </div>
           </div>
           <button onClick={openAddStopModal} className="btn-primary">
@@ -352,8 +356,8 @@ export default function ItineraryBuilderPage({ params }: { params: Promise<{ id:
         </div>
 
         {/* Tip */}
-        <div className="glass-light p-3 rounded-xl mb-6 text-xs text-gt-muted flex items-center gap-2">
-          <GripVertical className="w-4 h-4 text-amber-400 flex-shrink-0" />
+        <div className="glass-light p-3 rounded-xl mb-6 text-xs text-slate-500 flex items-center gap-2">
+          <GripVertical className="w-4 h-4 text-amber-600 flex-shrink-0" />
           Drag stops to reorder your journey. Click "+ Add Activity" to enrich each city.
         </div>
 
@@ -365,10 +369,10 @@ export default function ItineraryBuilderPage({ params }: { params: Promise<{ id:
             className="flex flex-col items-center justify-center py-20 text-center"
           >
             <div className="w-16 h-16 rounded-2xl glass flex items-center justify-center mb-4">
-              <MapPin className="w-6 h-6 text-amber-400" />
+              <MapPin className="w-6 h-6 text-amber-600" />
             </div>
             <h3 className="font-display text-xl font-bold mb-2">No stops yet</h3>
-            <p className="text-gt-muted mb-6 text-sm">Add cities to start building your itinerary</p>
+            <p className="text-slate-500 mb-6 text-sm">Add cities to start building your itinerary</p>
             <button onClick={openAddStopModal} className="btn-primary">
               <Plus className="w-4 h-4" /> Add First Stop
             </button>

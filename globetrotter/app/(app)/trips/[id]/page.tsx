@@ -38,9 +38,9 @@ function ActivityBlock({ activity }: { activity: Activity }) {
           </span>
         </div>
         {activity.description && (
-          <p className="text-xs text-gt-muted mt-0.5 line-clamp-2">{activity.description}</p>
+          <p className="text-xs text-slate-500 mt-0.5 line-clamp-2">{activity.description}</p>
         )}
-        <div className="flex items-center gap-3 mt-2 text-xs text-gt-muted">
+        <div className="flex items-center gap-3 mt-2 text-xs text-slate-500">
           {activity.time && (
             <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{activity.time}</span>
           )}
@@ -73,18 +73,18 @@ function StopCard({ stop, index }: { stop: CityStop; index: number }) {
     >
       {/* Stop Header */}
       <div
-        className="flex items-center gap-4 p-5 cursor-pointer hover:bg-white/[0.02] transition-colors"
+        className="flex items-center gap-4 p-5 cursor-pointer hover:bg-black/[0.02] transition-colors"
         onClick={() => setExpanded(!expanded)}
       >
         <div className="w-10 h-10 rounded-full bg-amber-500/15 border border-amber-500/30 flex items-center justify-center flex-shrink-0">
-          <span className="text-amber-400 font-bold text-sm">{index + 1}</span>
+          <span className="text-amber-600 font-bold text-sm">{index + 1}</span>
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
             <h3 className="font-display font-bold text-lg">{stop.city}</h3>
-            <span className="text-gt-muted text-sm">{stop.country}</span>
+            <span className="text-slate-500 text-sm">{stop.country}</span>
           </div>
-          <div className="flex items-center gap-3 text-xs text-gt-muted mt-0.5">
+          <div className="flex items-center gap-3 text-xs text-slate-500 mt-0.5">
             <span className="flex items-center gap-1"><Calendar className="w-3 h-3" />{stop.startDate} → {stop.endDate}</span>
             <span>{nights} nights</span>
             <span className="flex items-center gap-1 text-green-400"><DollarSign className="w-3 h-3" />${totalCost}</span>
@@ -92,7 +92,7 @@ function StopCard({ stop, index }: { stop: CityStop; index: number }) {
         </div>
         <div className="flex items-center gap-2">
           <span className="badge badge-amber text-xs">{stop.activities.length} activities</span>
-          {expanded ? <ChevronUp className="w-4 h-4 text-gt-muted" /> : <ChevronDown className="w-4 h-4 text-gt-muted" />}
+          {expanded ? <ChevronUp className="w-4 h-4 text-slate-500" /> : <ChevronDown className="w-4 h-4 text-slate-500" />}
         </div>
       </div>
 
@@ -108,7 +108,7 @@ function StopCard({ stop, index }: { stop: CityStop; index: number }) {
           >
             <div className="px-5 pb-5 space-y-2">
               {stop.activities.length === 0 ? (
-                <p className="text-gt-muted text-sm py-4 text-center">No activities added yet</p>
+                <p className="text-slate-500 text-sm py-4 text-center">No activities added yet</p>
               ) : (
                 stop.activities.map((act) => <ActivityBlock key={act.id} activity={act} />)
               )}
@@ -139,25 +139,25 @@ function CalendarView({ stops }: { stops: CityStop[] }) {
             {/* Timeline line */}
             <div className="flex flex-col items-center">
               <div className="w-3 h-3 rounded-full bg-amber-500 flex-shrink-0 mt-1" />
-              {i < stops.length - 1 && <div className="w-0.5 flex-1 bg-amber-500/20 my-1" />}
+              {i < stops.length - 1 && <div className="w-0.5 flex-1 bg-amber-500/10 my-1" />}
             </div>
             <div className="flex-1 glass p-4 rounded-xl mb-2">
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="font-display font-bold">{stop.city}, {stop.country}</h3>
-                  <p className="text-xs text-gt-muted">{stop.startDate} – {stop.endDate} ({days} nights)</p>
+                  <p className="text-xs text-slate-500">{stop.startDate} – {stop.endDate} ({days} nights)</p>
                 </div>
                 <span className="badge badge-amber">{stop.activities.length} activities</span>
               </div>
               {stop.activities.slice(0, 2).map((act) => (
-                <div key={act.id} className="flex items-center gap-2 mt-2 text-xs text-gt-muted">
+                <div key={act.id} className="flex items-center gap-2 mt-2 text-xs text-slate-500">
                   <span className="w-1.5 h-1.5 rounded-full bg-amber-500/60" />
                   {act.name}
-                  {act.time && <span className="text-gt-muted">({act.time})</span>}
+                  {act.time && <span className="text-slate-500">({act.time})</span>}
                 </div>
               ))}
               {stop.activities.length > 2 && (
-                <p className="text-xs text-gt-muted mt-1">+{stop.activities.length - 2} more activities</p>
+                <p className="text-xs text-slate-500 mt-1">+{stop.activities.length - 2} more activities</p>
               )}
             </div>
           </motion.div>
@@ -224,8 +224,8 @@ export default function TripViewPage({ params }: { params: Promise<{ id: string 
           </Link>
         </div>
         <div className="absolute bottom-4 left-4">
-          <h1 className="font-display text-3xl font-bold text-white">{trip.name}</h1>
-          <div className="flex items-center gap-3 mt-1 text-white/70 text-sm">
+          <h1 className="font-display text-3xl font-bold text-slate-900">{trip.name}</h1>
+          <div className="flex items-center gap-3 mt-1 text-slate-600 text-sm">
             <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" />{trip.stops.length} cities</span>
             <span className="flex items-center gap-1"><Calendar className="w-3.5 h-3.5" />{totalNights} nights</span>
             <span className="flex items-center gap-1"><DollarSign className="w-3.5 h-3.5" />${trip.budget.toLocaleString()} budget</span>
@@ -244,7 +244,7 @@ export default function TripViewPage({ params }: { params: Promise<{ id: string 
         ].map(({ label, value }) => (
           <div key={label} className="glass-light p-3 rounded-xl text-center">
             <p className="font-bold text-lg gradient-text">{value}</p>
-            <p className="text-gt-muted text-xs">{label}</p>
+            <p className="text-slate-500 text-xs">{label}</p>
           </div>
         ))}
       </div>
@@ -254,13 +254,13 @@ export default function TripViewPage({ params }: { params: Promise<{ id: string 
         <div className="flex gap-1 p-1 glass-light rounded-xl">
           <button
             onClick={() => useItineraryStore.getState().setViewMode('list')}
-            className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all ${viewMode === 'list' ? 'bg-amber-500 text-[#080d1a]' : 'text-gt-muted hover:text-gt-text'}`}
+            className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all ${viewMode === 'list' ? 'bg-amber-500 text-[#ffffff]' : 'text-slate-500 hover:text-gt-text'}`}
           >
             <List className="w-4 h-4" /> List
           </button>
           <button
             onClick={() => useItineraryStore.getState().setViewMode('calendar')}
-            className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all ${viewMode === 'calendar' ? 'bg-amber-500 text-[#080d1a]' : 'text-gt-muted hover:text-gt-text'}`}
+            className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all ${viewMode === 'calendar' ? 'bg-amber-500 text-[#ffffff]' : 'text-slate-500 hover:text-gt-text'}`}
           >
             <Calendar className="w-4 h-4" /> Timeline
           </button>
@@ -282,7 +282,7 @@ export default function TripViewPage({ params }: { params: Promise<{ id: string 
           <motion.div key="list" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-4">
             {trip.stops.length === 0 ? (
               <div className="text-center py-16">
-                <p className="text-gt-muted mb-4">No stops yet. Start building your itinerary!</p>
+                <p className="text-slate-500 mb-4">No stops yet. Start building your itinerary!</p>
                 <Link href={`/trips/${id}/builder`}>
                   <button className="btn-primary">Open Itinerary Builder</button>
                 </Link>

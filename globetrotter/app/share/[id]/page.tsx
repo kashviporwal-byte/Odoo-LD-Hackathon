@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import {
   MapPin, Calendar, DollarSign, Globe, Copy, Check,
-  Share2, Twitter, Facebook, Mail, ArrowRight, Star
+  Share2, MessageSquare, Mail, ArrowRight, Star
 } from 'lucide-react';
 import { useState } from 'react';
 import { mockTrips } from '@/lib/mockData';
@@ -22,9 +22,9 @@ export default function SharePage({ params }: { params: Promise<{ id: string }> 
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center glass p-10 rounded-2xl max-w-sm mx-4">
-          <Globe className="w-12 h-12 text-gt-muted mx-auto mb-4" />
+          <Globe className="w-12 h-12 text-slate-500 mx-auto mb-4" />
           <h2 className="font-display text-2xl font-bold mb-2">Trip Not Found</h2>
-          <p className="text-gt-muted mb-6">This trip doesn&apos;t exist or is set to private.</p>
+          <p className="text-slate-500 mb-6">This trip doesn&apos;t exist or is set to private.</p>
           <Link href="/login"><button className="btn-primary">Explore GlobeTrotter</button></Link>
         </div>
       </div>
@@ -57,7 +57,7 @@ export default function SharePage({ params }: { params: Promise<{ id: string }> 
           alt={trip.name}
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#080d1a]/40 to-[#080d1a]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#ffffff]/40 to-[#ffffff]" />
         <div className="absolute top-4 left-4">
           <Link href="/dashboard" className="btn-ghost text-sm backdrop-blur py-2 px-3">
             ← GlobeTrotter
@@ -65,14 +65,14 @@ export default function SharePage({ params }: { params: Promise<{ id: string }> 
         </div>
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-center w-full px-4">
           <motion.h1
-            className="font-display text-4xl font-bold text-white"
+            className="font-display text-4xl font-bold text-slate-900"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
           >
             {trip.name}
           </motion.h1>
           {trip.description && (
-            <p className="text-white/70 mt-2 max-w-lg mx-auto">{trip.description}</p>
+            <p className="text-slate-600 mt-2 max-w-lg mx-auto">{trip.description}</p>
           )}
         </div>
       </div>
@@ -87,9 +87,9 @@ export default function SharePage({ params }: { params: Promise<{ id: string }> 
             { label: 'Est. Cost', value: `$${totalCost.toLocaleString()}`, icon: DollarSign },
           ].map(({ label, value, icon: Icon }) => (
             <div key={label} className="glass text-center p-4 rounded-xl">
-              <Icon className="w-4 h-4 text-amber-400 mx-auto mb-1" />
+              <Icon className="w-4 h-4 text-amber-600 mx-auto mb-1" />
               <p className="font-bold gradient-text text-lg">{value}</p>
-              <p className="text-gt-muted text-xs">{label}</p>
+              <p className="text-slate-500 text-xs">{label}</p>
             </div>
           ))}
         </div>
@@ -97,9 +97,9 @@ export default function SharePage({ params }: { params: Promise<{ id: string }> 
         {/* Share Box */}
         <div className="glass rounded-2xl p-5 mb-8">
           <h2 className="font-display text-lg font-bold mb-1">Share This Trip</h2>
-          <p className="text-gt-muted text-sm mb-4">Copy the link or share on social media</p>
+          <p className="text-slate-500 text-sm mb-4">Copy the link or share on social media</p>
           <div className="flex gap-2 mb-4">
-            <input readOnly value={shareUrl} className="gt-input flex-1 text-sm text-gt-muted cursor-pointer" onClick={handleCopy} />
+            <input readOnly value={shareUrl} className="gt-input flex-1 text-sm text-slate-500 cursor-pointer" onClick={handleCopy} />
             <button onClick={handleCopy} className={`btn-primary flex-shrink-0 ${copied ? 'bg-green-600' : ''}`}>
               {copied ? <><Check className="w-4 h-4" /> Copied!</> : <><Copy className="w-4 h-4" /> Copy</>}
             </button>
@@ -111,7 +111,7 @@ export default function SharePage({ params }: { params: Promise<{ id: string }> 
               rel="noopener noreferrer"
               className="btn-ghost text-sm flex-1 justify-center"
             >
-              <Twitter className="w-4 h-4 text-sky-400" /> Twitter
+              <Share2 className="w-4 h-4 text-sky-500" /> Twitter
             </a>
             <a
               href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`}
@@ -119,13 +119,13 @@ export default function SharePage({ params }: { params: Promise<{ id: string }> 
               rel="noopener noreferrer"
               className="btn-ghost text-sm flex-1 justify-center"
             >
-              <Facebook className="w-4 h-4 text-blue-500" /> Facebook
+              <MessageSquare className="w-4 h-4 text-blue-600" /> Share
             </a>
             <a
               href={`mailto:?subject=Check out my trip: ${trip.name}&body=${shareUrl}`}
               className="btn-ghost text-sm flex-1 justify-center"
             >
-              <Mail className="w-4 h-4 text-amber-400" /> Email
+              <Mail className="w-4 h-4 text-amber-600" /> Email
             </a>
           </div>
         </div>
@@ -143,11 +143,11 @@ export default function SharePage({ params }: { params: Promise<{ id: string }> 
             >
               <div className="flex items-center gap-4 p-5">
                 <div className="w-12 h-12 rounded-full bg-amber-500/15 border border-amber-500/30 flex items-center justify-center flex-shrink-0">
-                  <span className="text-amber-400 font-bold">{i + 1}</span>
+                  <span className="text-amber-600 font-bold">{i + 1}</span>
                 </div>
                 <div className="flex-1">
                   <h3 className="font-display font-bold text-lg">{stop.city}</h3>
-                  <p className="text-gt-muted text-sm">{stop.country} · {stop.startDate} → {stop.endDate}</p>
+                  <p className="text-slate-500 text-sm">{stop.country} · {stop.startDate} → {stop.endDate}</p>
                 </div>
                 <span className="badge badge-amber">{stop.activities.length} activities</span>
               </div>
@@ -168,9 +168,9 @@ export default function SharePage({ params }: { params: Promise<{ id: string }> 
 
         {/* CTA */}
         <div className="glass rounded-2xl p-6 text-center">
-          <Globe className="w-10 h-10 text-amber-400 mx-auto mb-3" />
+          <Globe className="w-10 h-10 text-amber-600 mx-auto mb-3" />
           <h3 className="font-display text-xl font-bold mb-2">Inspired? Plan Your Own!</h3>
-          <p className="text-gt-muted text-sm mb-4">Copy this trip or start from scratch with GlobeTrotter</p>
+          <p className="text-slate-500 text-sm mb-4">Copy this trip or start from scratch with GlobeTrotter</p>
           <div className="flex gap-3 justify-center">
             <Link href="/login">
               <button className="btn-primary">

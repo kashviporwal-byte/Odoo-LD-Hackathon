@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { mockCities } from '@/lib/mockData';
 import type { CityMeta, Region, CostTier } from '@/types';
+import { useGlobeStore } from '@/store/useGlobeStore';
 
 const regions: Region[] = ['Asia', 'Europe', 'Americas', 'Africa', 'Oceania', 'Middle East'];
 const costTiers: CostTier[] = ['budget', 'mid-range', 'luxury'];
@@ -40,13 +41,13 @@ function CityCard({ city, onAdd, saved, onSave }: {
         <div className="img-overlay" />
         <button
           onClick={() => onSave(city.id)}
-          className={`absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center transition-all ${saved ? 'bg-red-500/80 text-white' : 'bg-black/40 text-white/80 hover:bg-black/60'}`}
+          className={`absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center transition-all ${saved ? 'bg-red-500/80 text-slate-900' : 'bg-black/40 text-slate-900/80 hover:bg-black/60'}`}
         >
           <Heart className={`w-4 h-4 ${saved ? 'fill-current' : ''}`} />
         </button>
         <div className="absolute bottom-3 left-3">
-          <h3 className="font-display text-white font-bold text-lg">{city.name}</h3>
-          <p className="text-white/70 text-xs flex items-center gap-1">
+          <h3 className="font-display text-slate-900 font-bold text-lg">{city.name}</h3>
+          <p className="text-slate-600 text-xs flex items-center gap-1">
             <Globe className="w-3 h-3" />{city.country} · {city.region}
           </p>
         </div>
@@ -65,18 +66,18 @@ function CityCard({ city, onAdd, saved, onSave }: {
           </span>
         </div>
 
-        <p className="text-gt-muted text-xs line-clamp-2 mb-3">{city.description}</p>
+        <p className="text-slate-500 text-xs line-clamp-2 mb-3">{city.description}</p>
 
-        <div className="flex items-center gap-2 text-xs text-gt-muted mb-3">
+        <div className="flex items-center gap-2 text-xs text-slate-500 mb-3">
           <span>Best: {city.bestTimeToVisit}</span>
           <span>·</span>
           <span className="flex items-center gap-1">
-            Cost index: <span className="text-amber-400 font-semibold">{city.costIndex}/10</span>
+            Cost index: <span className="text-amber-600 font-semibold">{city.costIndex}/10</span>
           </span>
         </div>
 
         {/* Cost index bar */}
-        <div className="h-1.5 bg-white/[0.06] rounded-full mb-3">
+        <div className="h-1.5 bg-black/[0.04] rounded-full mb-3">
           <div
             className="h-full rounded-full bg-gradient-to-r from-green-500 to-red-500"
             style={{ width: `${city.costIndex * 10}%` }}
@@ -86,7 +87,7 @@ function CityCard({ city, onAdd, saved, onSave }: {
         {/* Top activities expandable */}
         <button
           onClick={() => setExpanded(!expanded)}
-          className="flex items-center gap-1 text-xs text-gt-muted hover:text-amber-400 transition-colors mb-2"
+          className="flex items-center gap-1 text-xs text-slate-500 hover:text-amber-600 transition-colors mb-2"
         >
           Top Activities <ChevronDown className={`w-3 h-3 transition-transform ${expanded ? 'rotate-180' : ''}`} />
         </button>
@@ -137,8 +138,11 @@ export default function CitySearchPage() {
     return matchSearch && matchRegion && matchTier;
   });
 
+  const openGlobe = useGlobeStore((s) => s.openGlobe);
+
   const handleAdd = (city: CityMeta) => {
-    setAddedToast(`${city.name} added to your trip!`);
+    openGlobe(city.lat ?? 35.6762, city.lng ?? 139.6503, city.name);
+    setAddedToast(`${city.name} locked on globe!`);
     setTimeout(() => setAddedToast(null), 2500);
   };
 
@@ -153,13 +157,13 @@ export default function CitySearchPage() {
       {/* Header */}
       <div className="mb-6">
         <h1 className="font-display text-3xl font-bold mb-1">Discover Cities</h1>
-        <p className="text-gt-muted">Explore {mockCities.length} destinations worldwide</p>
+        <p className="text-slate-500">Explore {mockCities.length} destinations worldwide</p>
       </div>
 
       {/* Search + Filter bar */}
       <div className="flex gap-3 mb-4">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gt-muted" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
           <input
             className="gt-input pl-10"
             placeholder="Search cities or countries..."
@@ -167,14 +171,14 @@ export default function CitySearchPage() {
             onChange={(e) => setSearch(e.target.value)}
           />
           {search && (
-            <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gt-muted hover:text-gt-text">
+            <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-gt-text">
               <X className="w-4 h-4" />
             </button>
           )}
         </div>
         <button
           onClick={() => setFiltersOpen(!filtersOpen)}
-          className={`btn-ghost px-4 flex-shrink-0 ${hasFilters ? 'border-amber-500/50 text-amber-400' : ''}`}
+          className={`btn-ghost px-4 flex-shrink-0 ${hasFilters ? 'border-amber-500/50 text-amber-600' : ''}`}
         >
           <Filter className="w-4 h-4" />
           {hasFilters && <span className="w-2 h-2 rounded-full bg-amber-500 ml-1" />}
@@ -192,13 +196,13 @@ export default function CitySearchPage() {
           >
             <div className="glass-light p-4 rounded-xl space-y-3">
               <div>
-                <p className="text-xs font-semibold text-gt-muted mb-2">Region</p>
+                <p className="text-xs font-semibold text-slate-500 mb-2">Region</p>
                 <div className="flex gap-2 flex-wrap">
                   {(['All', ...regions] as const).map((r) => (
                     <button
                       key={r}
                       onClick={() => setSelectedRegion(r as Region | 'All')}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${selectedRegion === r ? 'bg-amber-500 text-[#080d1a]' : 'glass-light text-gt-muted hover:text-gt-text'}`}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${selectedRegion === r ? 'bg-amber-500 text-[#ffffff]' : 'glass-light text-slate-500 hover:text-gt-text'}`}
                     >
                       {r}
                     </button>
@@ -206,13 +210,13 @@ export default function CitySearchPage() {
                 </div>
               </div>
               <div>
-                <p className="text-xs font-semibold text-gt-muted mb-2">Budget Tier</p>
+                <p className="text-xs font-semibold text-slate-500 mb-2">Budget Tier</p>
                 <div className="flex gap-2">
                   {(['All', ...costTiers] as const).map((t) => (
                     <button
                       key={t}
                       onClick={() => setSelectedTier(t as CostTier | 'All')}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all capitalize ${selectedTier === t ? 'bg-amber-500 text-[#080d1a]' : 'glass-light text-gt-muted hover:text-gt-text'}`}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all capitalize ${selectedTier === t ? 'bg-amber-500 text-[#ffffff]' : 'glass-light text-slate-500 hover:text-gt-text'}`}
                     >
                       {t}
                     </button>
@@ -220,7 +224,7 @@ export default function CitySearchPage() {
                 </div>
               </div>
               {hasFilters && (
-                <button onClick={() => { setSelectedRegion('All'); setSelectedTier('All'); }} className="text-xs text-amber-400 hover:text-amber-300">
+                <button onClick={() => { setSelectedRegion('All'); setSelectedTier('All'); }} className="text-xs text-amber-600 hover:text-amber-300">
                   Clear filters
                 </button>
               )}
@@ -230,7 +234,7 @@ export default function CitySearchPage() {
       </AnimatePresence>
 
       {/* Results count */}
-      <p className="text-gt-muted text-sm mb-4">
+      <p className="text-slate-500 text-sm mb-4">
         {filtered.length} {filtered.length === 1 ? 'city' : 'cities'} found
         {debouncedSearch && ` for "${debouncedSearch}"`}
       </p>
@@ -255,7 +259,7 @@ export default function CitySearchPage() {
             animate={{ opacity: 1 }}
             className="text-center py-20"
           >
-            <p className="text-gt-muted text-lg mb-2">No cities found</p>
+            <p className="text-slate-500 text-lg mb-2">No cities found</p>
             <button onClick={() => { setSearch(''); setSelectedRegion('All'); setSelectedTier('All'); }} className="btn-ghost text-sm">
               Clear all filters
             </button>
@@ -270,7 +274,7 @@ export default function CitySearchPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
-            className="fixed bottom-6 left-1/2 -translate-x-1/2 px-5 py-3 rounded-xl glass border border-amber-500/30 text-amber-400 text-sm font-semibold shadow-xl"
+            className="fixed bottom-6 left-1/2 -translate-x-1/2 px-5 py-3 rounded-xl glass border border-amber-500/30 text-amber-600 text-sm font-semibold shadow-xl"
           >
             ✓ {addedToast}
           </motion.div>

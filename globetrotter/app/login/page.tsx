@@ -73,8 +73,8 @@ export default function LoginPage() {
             transition={{ duration: 0.8 }}
           />
         </AnimatePresence>
-        <div className="absolute inset-0 bg-gradient-to-r from-[#080d1a]/80 via-[#080d1a]/40 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#080d1a]/70 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#ffffff]/80 via-[#ffffff]/40 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#ffffff]/70 via-transparent to-transparent" />
 
         {/* Dot nav */}
         <div className="absolute bottom-8 left-8 flex gap-2">
@@ -90,22 +90,22 @@ export default function LoginPage() {
         <div className="relative z-10 flex flex-col justify-between p-12">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-amber-500 flex items-center justify-center">
-              <Globe className="w-5 h-5 text-[#080d1a]" strokeWidth={2.5} />
+              <Globe className="w-5 h-5 text-[#ffffff]" strokeWidth={2.5} />
             </div>
-            <span className="font-display text-2xl font-bold text-white">GlobeTrotter</span>
+            <span className="font-display text-2xl font-bold text-slate-900">GlobeTrotter</span>
           </div>
           <div>
-            <h2 className="font-display text-4xl font-bold text-white leading-tight mb-4">
+            <h2 className="font-display text-4xl font-bold text-slate-900 leading-tight mb-4">
               The World<br />Awaits You
             </h2>
-            <p className="text-white/70 text-lg max-w-sm">
+            <p className="text-slate-600 text-lg max-w-sm">
               Plan multi-city itineraries, track budgets, and share your adventures — all in one place.
             </p>
             <div className="flex gap-6 mt-8">
               {['12K+ Travelers', '38K+ Trips', '180+ Cities'].map((s) => (
                 <div key={s}>
-                  <p className="text-amber-400 font-bold text-lg">{s.split('+')[0]}+</p>
-                  <p className="text-white/60 text-xs">{s.split(' ').slice(1).join(' ')}</p>
+                  <p className="text-amber-600 font-bold text-lg">{s.split('+')[0]}+</p>
+                  <p className="text-slate-500 text-xs">{s.split(' ').slice(1).join(' ')}</p>
                 </div>
               ))}
             </div>
@@ -124,7 +124,7 @@ export default function LoginPage() {
           {/* Logo (mobile) */}
           <div className="flex items-center gap-3 mb-8 lg:hidden">
             <div className="w-9 h-9 rounded-xl bg-amber-500 flex items-center justify-center">
-              <Globe className="w-4 h-4 text-[#080d1a]" strokeWidth={2.5} />
+              <Globe className="w-4 h-4 text-[#ffffff]" strokeWidth={2.5} />
             </div>
             <span className="font-display text-xl font-bold">GlobeTrotter</span>
           </div>
@@ -132,7 +132,7 @@ export default function LoginPage() {
           <h1 className="font-display text-3xl font-bold mb-2">
             {tab === 'login' ? 'Welcome back' : 'Start your journey'}
           </h1>
-          <p className="text-gt-muted mb-8">
+          <p className="text-slate-500 mb-8">
             {tab === 'login'
               ? 'Sign in to continue planning your adventures'
               : 'Create your free account today'}
@@ -146,8 +146,8 @@ export default function LoginPage() {
                 onClick={() => { setTab(t); setError(''); }}
                 className={`flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 ${
                   tab === t
-                    ? 'bg-amber-500 text-[#080d1a] shadow-lg'
-                    : 'text-gt-muted hover:text-gt-text'
+                    ? 'bg-amber-500 text-[#ffffff] shadow-lg'
+                    : 'text-slate-500 hover:text-gt-text'
                 }`}
               >
                 {t === 'login' ? 'Login' : 'Sign Up'}
@@ -167,7 +167,7 @@ export default function LoginPage() {
             >
               {tab === 'signup' && (
                 <div>
-                  <label className="block text-sm font-medium text-gt-muted mb-1.5">Full Name</label>
+                  <label className="block text-sm font-medium text-slate-500 mb-1.5">Full Name</label>
                   <input
                     type="text"
                     className="gt-input"
@@ -180,7 +180,7 @@ export default function LoginPage() {
               )}
 
               <div>
-                <label className="block text-sm font-medium text-gt-muted mb-1.5">Email</label>
+                <label className="block text-sm font-medium text-slate-500 mb-1.5">Email</label>
                 <input
                   type="email"
                   className="gt-input"
@@ -192,7 +192,7 @@ export default function LoginPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gt-muted mb-1.5">Password</label>
+                <label className="block text-sm font-medium text-slate-500 mb-1.5">Password</label>
                 <div className="relative">
                   <input
                     type={showPassword ? 'text' : 'password'}
@@ -205,7 +205,7 @@ export default function LoginPage() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gt-muted hover:text-gt-text transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-gt-text transition-colors"
                   >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -214,7 +214,7 @@ export default function LoginPage() {
 
               {tab === 'signup' && (
                 <div>
-                  <label className="block text-sm font-medium text-gt-muted mb-1.5">Confirm Password</label>
+                  <label className="block text-sm font-medium text-slate-500 mb-1.5">Confirm Password</label>
                   <input
                     type="password"
                     className="gt-input"
@@ -228,7 +228,7 @@ export default function LoginPage() {
 
               {tab === 'login' && (
                 <div className="flex justify-end">
-                  <button type="button" className="text-sm text-amber-400 hover:text-amber-300 transition-colors">
+                  <button type="button" className="text-sm text-amber-600 hover:text-amber-300 transition-colors">
                     Forgot password?
                   </button>
                 </div>
@@ -257,11 +257,11 @@ export default function LoginPage() {
             </motion.form>
           </AnimatePresence>
 
-          <p className="text-center text-gt-muted text-sm mt-6">
+          <p className="text-center text-slate-500 text-sm mt-6">
             {tab === 'login' ? "Don't have an account? " : 'Already have an account? '}
             <button
               onClick={() => setTab(tab === 'login' ? 'signup' : 'login')}
-              className="text-amber-400 hover:text-amber-300 font-semibold transition-colors"
+              className="text-amber-600 hover:text-amber-300 font-semibold transition-colors"
             >
               {tab === 'login' ? 'Sign up free' : 'Login'}
             </button>

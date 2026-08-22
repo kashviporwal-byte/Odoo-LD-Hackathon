@@ -47,28 +47,28 @@ export default function ProfilePage() {
     <div className="page-wrapper p-4 lg:p-8 max-w-3xl mx-auto">
       <div className="mb-6">
         <h1 className="font-display text-3xl font-bold">Profile & Settings</h1>
-        <p className="text-gt-muted mt-1">Manage your account and preferences</p>
+        <p className="text-slate-500 mt-1">Manage your account and preferences</p>
       </div>
 
       {/* User Hero Card */}
       <div className="glass rounded-2xl p-6 mb-6 flex items-center gap-5">
         <div className="relative">
-          <div className="w-20 h-20 rounded-2xl overflow-hidden bg-amber-500/20 flex items-center justify-center">
+          <div className="w-20 h-20 rounded-2xl overflow-hidden bg-amber-500/10 flex items-center justify-center">
             {user.avatarUrl ? (
               <img src={user.avatarUrl} alt={user.name} className="w-full h-full object-cover" />
             ) : (
-              <span className="text-amber-400 font-bold text-3xl">{user.name[0]}</span>
+              <span className="text-amber-600 font-bold text-3xl">{user.name[0]}</span>
             )}
           </div>
-          <button className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-amber-500 flex items-center justify-center text-[#080d1a]">
+          <button className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-amber-500 flex items-center justify-center text-[#ffffff]">
             <Camera className="w-3.5 h-3.5" />
           </button>
         </div>
         <div className="flex-1">
           <h2 className="font-display text-xl font-bold">{user.name}</h2>
-          <p className="text-gt-muted text-sm">{user.email}</p>
-          <div className="flex gap-3 mt-2 text-xs text-gt-muted">
-            <span className="flex items-center gap-1"><MapPin className="w-3 h-3 text-amber-400" />{user.tripsCount} trips</span>
+          <p className="text-slate-500 text-sm">{user.email}</p>
+          <div className="flex gap-3 mt-2 text-xs text-slate-500">
+            <span className="flex items-center gap-1"><MapPin className="w-3 h-3 text-amber-600" />{user.tripsCount} trips</span>
             <span className="flex items-center gap-1"><Heart className="w-3 h-3 text-red-400" />{user.savedDestinations.length} saved</span>
             <span className="flex items-center gap-1"><Globe className="w-3 h-3 text-blue-400" />{user.language}</span>
           </div>
@@ -85,7 +85,7 @@ export default function ProfilePage() {
             key={id}
             onClick={() => setActiveTab(id)}
             className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition-all ${
-              activeTab === id ? 'bg-amber-500 text-[#080d1a]' : 'text-gt-muted hover:text-gt-text'
+              activeTab === id ? 'bg-amber-500 text-[#ffffff]' : 'text-slate-500 hover:text-gt-text'
             }`}
           >
             <Icon className="w-4 h-4" />
@@ -105,7 +105,7 @@ export default function ProfilePage() {
         {activeTab === 'profile' && (
           <>
             <div>
-              <label className="block text-sm font-medium text-gt-muted mb-1.5">Full Name</label>
+              <label className="block text-sm font-medium text-slate-500 mb-1.5">Full Name</label>
               <input
                 className="gt-input"
                 value={form.name}
@@ -114,7 +114,7 @@ export default function ProfilePage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gt-muted mb-1.5">Email Address</label>
+              <label className="block text-sm font-medium text-slate-500 mb-1.5">Email Address</label>
               <input
                 type="email"
                 className="gt-input"
@@ -124,7 +124,7 @@ export default function ProfilePage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gt-muted mb-1.5">Language</label>
+              <label className="block text-sm font-medium text-slate-500 mb-1.5">Language</label>
               <select
                 className="gt-input"
                 value={form.language}
@@ -132,7 +132,7 @@ export default function ProfilePage() {
                 style={{ background: 'rgba(255,255,255,0.05)', color: 'var(--color-text)' }}
               >
                 {languages.map((l) => (
-                  <option key={l} value={l} style={{ background: '#0a0f1e' }}>{l}</option>
+                  <option key={l} value={l} style={{ background: '#ffffff' }}>{l}</option>
                 ))}
               </select>
             </div>
@@ -147,7 +147,7 @@ export default function ProfilePage() {
             <div>
               <h3 className="font-semibold mb-3 flex items-center gap-2"><Heart className="w-4 h-4 text-red-400" /> Saved Destinations</h3>
               {savedCities.length === 0 ? (
-                <p className="text-gt-muted text-sm">No saved destinations yet. Visit City Search to save cities!</p>
+                <p className="text-slate-500 text-sm">No saved destinations yet. Visit City Search to save cities!</p>
               ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   {savedCities.map((city) => (
@@ -155,17 +155,17 @@ export default function ProfilePage() {
                       <img src={city.coverPhoto} alt={city.name} className="w-full h-full object-cover" />
                       <div className="img-overlay" />
                       <div className="absolute bottom-2 left-2">
-                        <p className="text-white text-xs font-bold">{city.name}</p>
-                        <p className="text-white/60 text-xs">{city.country}</p>
+                        <p className="text-slate-900 text-xs font-bold">{city.name}</p>
+                        <p className="text-slate-500 text-xs">{city.country}</p>
                       </div>
                     </div>
                   ))}
                 </div>
               )}
             </div>
-            <div className="h-px bg-white/[0.06]" />
+            <div className="h-px bg-black/[0.04]" />
             <div>
-              <h3 className="font-semibold mb-3 flex items-center gap-2"><Bell className="w-4 h-4 text-amber-400" /> Notifications</h3>
+              <h3 className="font-semibold mb-3 flex items-center gap-2"><Bell className="w-4 h-4 text-amber-600" /> Notifications</h3>
               {[
                 { label: 'Trip reminders', desc: 'Get notified before your trips' },
                 { label: 'New features', desc: 'Updates on new app features' },
@@ -174,7 +174,7 @@ export default function ProfilePage() {
                 <div key={i} className="flex items-center justify-between py-3 border-b border-white/[0.04] last:border-0">
                   <div>
                     <p className="text-sm font-medium">{item.label}</p>
-                    <p className="text-xs text-gt-muted">{item.desc}</p>
+                    <p className="text-xs text-slate-500">{item.desc}</p>
                   </div>
                   <button className="w-11 h-6 rounded-full bg-amber-500 relative flex-shrink-0">
                     <div className="w-5 h-5 rounded-full bg-white shadow absolute right-0.5 top-0.5" />
@@ -197,16 +197,16 @@ export default function ProfilePage() {
                   <div key={i} className="flex items-center justify-between p-3 glass-light rounded-xl">
                     <div>
                       <p className="text-sm font-medium">{item.label}</p>
-                      <p className="text-xs text-gt-muted">{item.desc}</p>
+                      <p className="text-xs text-slate-500">{item.desc}</p>
                     </div>
-                    <button className={`w-11 h-6 rounded-full relative flex-shrink-0 transition-colors ${item.on ? 'bg-amber-500' : 'bg-white/10'}`}>
+                    <button className={`w-11 h-6 rounded-full relative flex-shrink-0 transition-colors ${item.on ? 'bg-amber-500' : 'bg-black/5'}`}>
                       <div className={`w-5 h-5 rounded-full bg-white shadow absolute top-0.5 transition-all ${item.on ? 'right-0.5' : 'left-0.5'}`} />
                     </button>
                   </div>
                 ))}
               </div>
             </div>
-            <div className="h-px bg-white/[0.06]" />
+            <div className="h-px bg-black/[0.04]" />
             <div>
               <h3 className="font-semibold mb-3 text-red-400 flex items-center gap-2"><Trash2 className="w-4 h-4" /> Danger Zone</h3>
               {!deleteConfirm ? (

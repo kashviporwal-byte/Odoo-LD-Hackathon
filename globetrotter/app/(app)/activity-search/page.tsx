@@ -77,8 +77,8 @@ function ActivityCard({
           </div>
           {activity.rating && (
             <div className="absolute top-3 right-3 flex items-center gap-1 bg-black/50 px-2 py-1 rounded-lg">
-              <Star className="w-3 h-3 text-amber-400 fill-amber-400" />
-              <span className="text-white text-xs font-bold">{activity.rating}</span>
+              <Star className="w-3 h-3 text-amber-600 fill-amber-400" />
+              <span className="text-slate-900 text-xs font-bold">{activity.rating}</span>
             </div>
           )}
         </div>
@@ -87,12 +87,12 @@ function ActivityCard({
       <div className="p-4">
         <div className="flex items-start justify-between gap-2 mb-1.5">
           <h3 className="font-semibold text-sm leading-tight">{activity.name}</h3>
-          <span className={`font-bold text-sm flex-shrink-0 ${activity.cost === 0 ? 'text-green-400' : 'text-amber-400'}`}>
+          <span className={`font-bold text-sm flex-shrink-0 ${activity.cost === 0 ? 'text-green-400' : 'text-amber-600'}`}>
             {activity.cost === 0 ? 'Free' : `$${activity.cost}`}
           </span>
         </div>
 
-        <p className="text-xs text-gt-muted mb-2">{cityName}</p>
+        <p className="text-xs text-slate-500 mb-2">{cityName}</p>
 
         {!activity.imageUrl && (
           <span className={`badge ${catColors[activity.category]} mb-2`}>
@@ -100,7 +100,7 @@ function ActivityCard({
           </span>
         )}
 
-        <div className="flex items-center gap-3 text-xs text-gt-muted mb-3">
+        <div className="flex items-center gap-3 text-xs text-slate-500 mb-3">
           {activity.time && (
             <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{activity.time}</span>
           )}
@@ -112,7 +112,7 @@ function ActivityCard({
         {/* Description expandable */}
         <button
           onClick={() => setExpanded(!expanded)}
-          className="flex items-center gap-1 text-xs text-gt-muted hover:text-amber-400 transition-colors mb-2"
+          className="flex items-center gap-1 text-xs text-slate-500 hover:text-amber-600 transition-colors mb-2"
         >
           Details <ChevronDown className={`w-3 h-3 transition-transform ${expanded ? 'rotate-180' : ''}`} />
         </button>
@@ -122,7 +122,7 @@ function ActivityCard({
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              className="text-xs text-gt-muted mb-3 overflow-hidden"
+              className="text-xs text-slate-500 mb-3 overflow-hidden"
             >
               {activity.description}
             </motion.p>
@@ -185,12 +185,12 @@ export default function ActivitySearchPage() {
     <div className="page-wrapper p-4 lg:p-8">
       <div className="mb-6">
         <h1 className="font-display text-3xl font-bold mb-1">Activity Search</h1>
-        <p className="text-gt-muted">Browse {mockActivities.length} experiences across the globe</p>
+        <p className="text-slate-500">Browse {mockActivities.length} experiences across the globe</p>
       </div>
 
       {/* Search */}
       <div className="relative mb-4">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gt-muted" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
         <input
           className="gt-input pl-10"
           placeholder="Search activities..."
@@ -198,7 +198,7 @@ export default function ActivitySearchPage() {
           onChange={(e) => setSearch(e.target.value)}
         />
         {search && (
-          <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gt-muted hover:text-gt-text">
+          <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-gt-text">
             <X className="w-4 h-4" />
           </button>
         )}
@@ -208,7 +208,7 @@ export default function ActivitySearchPage() {
       <div className="flex gap-2 overflow-x-auto pb-2 mb-4">
         <button
           onClick={() => setSelectedCat('all')}
-          className={`px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap flex-shrink-0 transition-all ${selectedCat === 'all' ? 'bg-amber-500 text-[#080d1a]' : 'glass-light text-gt-muted hover:text-gt-text'}`}
+          className={`px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap flex-shrink-0 transition-all ${selectedCat === 'all' ? 'bg-amber-500 text-[#ffffff]' : 'glass-light text-slate-500 hover:text-gt-text'}`}
         >
           All
         </button>
@@ -216,7 +216,7 @@ export default function ActivitySearchPage() {
           <button
             key={cat}
             onClick={() => setSelectedCat(cat)}
-            className={`px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap flex-shrink-0 flex items-center gap-1.5 transition-all capitalize ${selectedCat === cat ? 'bg-amber-500 text-[#080d1a]' : 'glass-light text-gt-muted hover:text-gt-text'}`}
+            className={`px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap flex-shrink-0 flex items-center gap-1.5 transition-all capitalize ${selectedCat === cat ? 'bg-amber-500 text-[#ffffff]' : 'glass-light text-slate-500 hover:text-gt-text'}`}
           >
             {catIcons[cat]} {cat}
           </button>
@@ -226,13 +226,13 @@ export default function ActivitySearchPage() {
       {/* Cost + Duration Filters */}
       <div className="flex flex-wrap gap-3 mb-5">
         <div>
-          <p className="text-xs text-gt-muted mb-1.5">Cost</p>
+          <p className="text-xs text-slate-500 mb-1.5">Cost</p>
           <div className="flex gap-1.5">
             {([['all', 'Any'], ['free', 'Free'], ['budget', '$0-20'], ['mid', '$21-60'], ['premium', '$60+']] as const).map(([v, l]) => (
               <button
                 key={v}
                 onClick={() => setCostFilter(v as CostFilter)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${costFilter === v ? 'bg-amber-500 text-[#080d1a]' : 'glass-light text-gt-muted hover:text-gt-text'}`}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${costFilter === v ? 'bg-amber-500 text-[#ffffff]' : 'glass-light text-slate-500 hover:text-gt-text'}`}
               >
                 {l}
               </button>
@@ -240,13 +240,13 @@ export default function ActivitySearchPage() {
           </div>
         </div>
         <div>
-          <p className="text-xs text-gt-muted mb-1.5">Duration</p>
+          <p className="text-xs text-slate-500 mb-1.5">Duration</p>
           <div className="flex gap-1.5">
             {([['any', 'Any'], [2, '≤2h'], [4, '≤4h'], [6, '≤6h']] as const).map(([v, l]) => (
               <button
                 key={String(v)}
                 onClick={() => setMaxDuration(v)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${maxDuration === v ? 'bg-amber-500 text-[#080d1a]' : 'glass-light text-gt-muted hover:text-gt-text'}`}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${maxDuration === v ? 'bg-amber-500 text-[#ffffff]' : 'glass-light text-slate-500 hover:text-gt-text'}`}
               >
                 {l}
               </button>
@@ -255,7 +255,7 @@ export default function ActivitySearchPage() {
         </div>
       </div>
 
-      <p className="text-gt-muted text-sm mb-4">{filtered.length} activities · {addedIds.length} added</p>
+      <p className="text-slate-500 text-sm mb-4">{filtered.length} activities · {addedIds.length} added</p>
 
       {/* Activity Grid */}
       <AnimatePresence mode="popLayout">
@@ -275,7 +275,7 @@ export default function ActivitySearchPage() {
 
       {filtered.length === 0 && (
         <div className="text-center py-20">
-          <p className="text-gt-muted text-lg mb-2">No activities found</p>
+          <p className="text-slate-500 text-lg mb-2">No activities found</p>
           <button onClick={() => { setSearch(''); setSelectedCat('all'); setCostFilter('all'); setMaxDuration('any'); }} className="btn-ghost text-sm">
             Clear filters
           </button>
@@ -289,7 +289,7 @@ export default function ActivitySearchPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
-            className="fixed bottom-6 left-1/2 -translate-x-1/2 px-5 py-3 rounded-xl glass border border-amber-500/30 text-amber-400 text-sm font-semibold shadow-xl"
+            className="fixed bottom-6 left-1/2 -translate-x-1/2 px-5 py-3 rounded-xl glass border border-amber-500/30 text-amber-600 text-sm font-semibold shadow-xl"
           >
             ✓ {toast}
           </motion.div>

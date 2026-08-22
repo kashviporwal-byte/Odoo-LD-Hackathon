@@ -5,10 +5,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
-  Plus, Search, Filter, MapPin, Calendar, DollarSign,
-  Edit3, Trash2, Eye, Globe, MoreVertical, Map
+  Plus, Search, MapPin, Calendar, DollarSign,
+  Edit3, Trash2, Eye, Globe, MoreVertical
 } from 'lucide-react';
 import { useItineraryStore } from '@/store/useItineraryStore';
+import { useGlobeStore } from '@/store/useGlobeStore';
+import { mockCities } from '@/lib/mockData';
 import type { Trip, TripStatus } from '@/types';
 
 type FilterTab = 'all' | TripStatus;
@@ -23,10 +25,18 @@ const statusColors: Record<string, string> = {
 function TripCard({ trip, onDelete }: { trip: Trip; onDelete: (id: string) => void }) {
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
+  const openGlobe = useGlobeStore((s) => s.openGlobe);
   const nights = trip.stops.reduce((acc, s) => {
     const diff = new Date(s.endDate).getTime() - new Date(s.startDate).getTime();
     return acc + Math.ceil(diff / 86400000);
   }, 0);
+
+  const handleGlobeClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const cityMeta = mockCities.find((c) => c.id === trip.stops[0]?.cityId);
+    openGlobe(cityMeta?.lat ?? 48.8566, cityMeta?.lng ?? 2.3522, trip.stops[0]?.city ?? trip.name);
+  };
 
   return (
     <motion.div
@@ -51,9 +61,9 @@ function TripCard({ trip, onDelete }: { trip: Trip; onDelete: (id: string) => vo
           <div className="relative">
             <button
               onClick={(e) => { e.preventDefault(); setMenuOpen(!menuOpen); }}
-              className="w-8 h-8 rounded-full glass flex items-center justify-center hover:bg-white/20 transition-colors"
+              className="w-8 h-8 rounded-full glass flex items-center justify-center hover:bg-black/10 transition-colors"
             >
-              <MoreVertical className="w-4 h-4 text-white" />
+              <MoreVertical className="w-4 h-4 text-slate-900" />
             </button>
             <AnimatePresence>
               {menuOpen && (
@@ -61,7 +71,7 @@ function TripCard({ trip, onDelete }: { trip: Trip; onDelete: (id: string) => vo
                   initial={{ opacity: 0, scale: 0.9, y: -4 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.9, y: -4 }}
-                  className="absolute right-0 top-9 w-40 glass rounded-xl p-1 z-10 border border-white/10"
+                  className="absolute right-0 top-9 w-40 glass rounded-xl p-1 z-10 border border-black/10"
                   onMouseLeave={() => setMenuOpen(false)}
                 >
                   <button onClick={() => router.push(`/trips/${trip.id}`)} className="sidebar-link w-full text-xs py-2">
@@ -82,11 +92,11 @@ function TripCard({ trip, onDelete }: { trip: Trip; onDelete: (id: string) => vo
 
       <div className="p-5">
         <h3 className="font-display font-bold text-base mb-1">{trip.name}</h3>
-        {trip.description && <p className="text-gt-muted text-xs line-clamp-2 mb-3">{trip.description}</p>}
+        {trip.description && <p className="text-slate-500 text-xs line-clamp-2 mb-3">{trip.description}</p>}
 
-        <div className="flex items-center gap-4 text-xs text-gt-muted mb-4">
+        <div className="flex items-center gap-4 text-xs text-slate-500 mb-4">
           <span className="flex items-center gap-1">
-            <MapPin className="w-3.5 h-3.5 text-amber-400" />
+            <MapPin className="w-3.5 h-3.5 text-amber-600" />
             {trip.stops.length} {trip.stops.length === 1 ? 'city' : 'cities'}
           </span>
           <span className="flex items-center gap-1">
@@ -97,7 +107,7 @@ function TripCard({ trip, onDelete }: { trip: Trip; onDelete: (id: string) => vo
             <DollarSign className="w-3.5 h-3.5 text-green-400" />
             ${trip.budget.toLocaleString()}
           </span>
-          {trip.isPublic && <Globe className="w-3.5 h-3.5 text-purple-400" title="Public" />}
+          {trip.isPublic && <Globe className="w-3.5 h-3.5 text-purple-400" />}
         </div>
 
         {/* City tags */}
@@ -116,6 +126,15 @@ function TripCard({ trip, onDelete }: { trip: Trip; onDelete: (id: string) => vo
               <Eye className="w-3.5 h-3.5" /> View
             </button>
           </Link>
+          {trip.stops.length > 0 && (
+            <button
+              onClick={handleGlobeClick}
+              className="btn-ghost py-2 px-3 text-amber-600 hover:text-amber-500 hover:border-amber-500/40 transition-colors"
+              title="View on 3D Globe"
+            >
+              <Globe className="w-3.5 h-3.5" />
+            </button>
+          )}
           <Link href={`/trips/${trip.id}/builder`} className="flex-1">
             <button className="btn-primary w-full py-2 text-xs">
               <Edit3 className="w-3.5 h-3.5" /> Build
@@ -153,7 +172,7 @@ export default function TripsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
           <h1 className="font-display text-3xl font-bold">My Trips</h1>
-          <p className="text-gt-muted mt-1">{trips.length} trips planned</p>
+          <p className="text-slate-500 mt-1">{trips.length} trips planned</p>
         </div>
         <Link href="/trips/new">
           <button className="btn-primary"><Plus className="w-4 h-4" /> New Trip</button>
@@ -163,7 +182,7 @@ export default function TripsPage() {
       {/* Search + Filter */}
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gt-muted" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
           <input
             className="gt-input pl-10"
             placeholder="Search trips or cities..."
@@ -180,7 +199,7 @@ export default function TripsPage() {
             key={t.id}
             onClick={() => setFilter(t.id)}
             className={`px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all flex-shrink-0 ${
-              filter === t.id ? 'bg-amber-500 text-[#080d1a] font-bold' : 'glass-light text-gt-muted hover:text-gt-text'
+              filter === t.id ? 'bg-amber-500 text-[#ffffff] font-bold' : 'glass-light text-slate-500 hover:text-gt-text'
             }`}
           >
             {t.label}
@@ -207,10 +226,10 @@ export default function TripsPage() {
           className="flex flex-col items-center justify-center py-24 text-center"
         >
           <div className="w-20 h-20 rounded-2xl glass flex items-center justify-center mb-4">
-            <MapIcon className="w-8 h-8 text-gt-muted" />
+            <MapIcon className="w-8 h-8 text-slate-500" />
           </div>
           <h3 className="font-display text-xl font-bold mb-2">No trips found</h3>
-          <p className="text-gt-muted mb-6">
+          <p className="text-slate-500 mb-6">
             {search ? `No trips match "${search}"` : 'Start planning your first adventure'}
           </p>
           <Link href="/trips/new">

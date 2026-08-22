@@ -27,11 +27,16 @@ export const metadata: Metadata = {
   },
 };
 
+import GlobalGlobeOverlay from '@/components/trips/GlobalGlobeOverlay';
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${inter.variable} ${playfair.variable}`}>
       <body className="bg-gt-bg text-gt-text antialiased">
-        <QueryProvider>{children}</QueryProvider>
+        <QueryProvider>
+          {children}
+          <GlobalGlobeOverlay />
+        </QueryProvider>
       </body>
     </html>
   );

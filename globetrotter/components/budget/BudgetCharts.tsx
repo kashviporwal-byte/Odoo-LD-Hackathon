@@ -21,6 +21,22 @@ const renderLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }: an
   );
 };
 
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload?.length) {
+    return (
+      <div className="glass px-3 py-2 rounded-xl text-xs border border-black/10">
+        <p className="font-semibold mb-1">{label || payload[0].name}</p>
+        {payload.map((p: any) => (
+          <p key={p.name} style={{ color: p.color }}>
+            {p.name}: ${p.value?.toLocaleString()}
+          </p>
+        ))}
+      </div>
+    );
+  }
+  return null;
+};
+
 export default function BudgetCharts({ trip }: { trip: Trip }) {
   const { budgetBreakdown } = trip;
 
@@ -37,22 +53,6 @@ export default function BudgetCharts({ trip }: { trip: Trip }) {
     Activities: stop.activities.reduce((a, act) => a + act.cost, 0),
     Budget: Math.round(trip.budget / (trip.stops.length || 1)),
   }));
-
-  const CustomTooltip = ({ active, payload, label }: any) => {
-    if (active && payload?.length) {
-      return (
-        <div className="glass px-3 py-2 rounded-xl text-xs border border-white/10">
-          <p className="font-semibold mb-1">{label || payload[0].name}</p>
-          {payload.map((p: any) => (
-            <p key={p.name} style={{ color: p.color }}>
-              {p.name}: ${p.value?.toLocaleString()}
-            </p>
-          ))}
-        </div>
-      );
-    }
-    return null;
-  };
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -79,13 +79,13 @@ export default function BudgetCharts({ trip }: { trip: Trip }) {
                 </Pie>
                 <Tooltip content={<CustomTooltip />} />
                 <Legend
-                  formatter={(value) => <span style={{ color: '#94a3b8', fontSize: 12 }}>{value}</span>}
+                  formatter={(value) => <span style={{ color: '#64748b', fontSize: 12 }}>{value}</span>}
                 />
               </PieChart>
             </ResponsiveContainer>
           </>
         ) : (
-          <div className="h-48 flex items-center justify-center text-gt-muted text-sm">
+          <div className="h-48 flex items-center justify-center text-slate-500 text-sm">
             No budget data yet
           </div>
         )}
@@ -99,24 +99,24 @@ export default function BudgetCharts({ trip }: { trip: Trip }) {
             <BarChart data={barData} margin={{ top: 0, right: 0, bottom: 0, left: -10 }}>
               <XAxis
                 dataKey="city"
-                tick={{ fill: '#94a3b8', fontSize: 11 }}
+                tick={{ fill: '#64748b', fontSize: 11 }}
                 axisLine={false}
                 tickLine={false}
               />
               <YAxis
-                tick={{ fill: '#94a3b8', fontSize: 11 }}
+                tick={{ fill: '#64748b', fontSize: 11 }}
                 axisLine={false}
                 tickLine={false}
                 tickFormatter={(v) => `$${v}`}
               />
               <Tooltip content={<CustomTooltip />} />
-              <Legend formatter={(value) => <span style={{ color: '#94a3b8', fontSize: 12 }}>{value}</span>} />
+              <Legend formatter={(value) => <span style={{ color: '#64748b', fontSize: 12 }}>{value}</span>} />
               <Bar dataKey="Activities" fill="#f59e0b" radius={[4, 4, 0, 0]} />
               <Bar dataKey="Budget" fill="#60a5fa" radius={[4, 4, 0, 0]} opacity={0.5} />
             </BarChart>
           </ResponsiveContainer>
         ) : (
-          <div className="h-48 flex items-center justify-center text-gt-muted text-sm">
+          <div className="h-48 flex items-center justify-center text-slate-500 text-sm">
             Add stops to see cost breakdown
           </div>
         )}

@@ -11,6 +11,8 @@ import { useItineraryStore } from '@/store/useItineraryStore';
 import { mockCities } from '@/lib/mockData';
 import type { Trip } from '@/types';
 
+import { useGlobeStore } from '@/store/useGlobeStore';
+
 const statusColors: Record<string, string> = {
   upcoming: 'status-upcoming',
   ongoing: 'status-ongoing',
@@ -19,12 +21,23 @@ const statusColors: Record<string, string> = {
 };
 
 function TripCard({ trip }: { trip: Trip }) {
-  const city = trip.stops[0]?.city ?? 'Unknown';
+  const openGlobe = useGlobeStore((s) => s.openGlobe);
   const nights = trip.stops.reduce((acc, s) => {
     const start = new Date(s.startDate);
     const end = new Date(s.endDate);
     return acc + Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
   }, 0);
+
+  const handleGlobeClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    // Look up exact coords from mockCities using the first stop's cityId
+    const firstStopCityId = trip.stops[0]?.cityId;
+    const cityMeta = mockCities.find((c) => c.id === firstStopCityId);
+    const lat = cityMeta?.lat ?? 48.8566;
+    const lng = cityMeta?.lng ?? 2.3522;
+    openGlobe(lat, lng, trip.stops[0]?.city ?? trip.name);
+  };
 
   return (
     <motion.div
@@ -40,22 +53,29 @@ function TripCard({ trip }: { trip: Trip }) {
               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
             />
             <div className="img-overlay" />
-            <div className="absolute top-3 right-3">
+            <div className="absolute top-3 right-3 flex items-center gap-2">
+              <button
+                onClick={handleGlobeClick}
+                className="p-1.5 rounded-full bg-white/80 hover:bg-white text-amber-600 shadow-md transition-transform hover:scale-110"
+                title="View on 3D Globe"
+              >
+                <Globe className="w-3.5 h-3.5" />
+              </button>
               <span className={`badge ${statusColors[trip.status]} text-xs`}>{trip.status}</span>
             </div>
             <div className="absolute bottom-3 left-3">
-              <h3 className="font-display text-white font-bold text-lg leading-tight">{trip.name}</h3>
-              <p className="text-white/70 text-xs flex items-center gap-1 mt-0.5">
+              <h3 className="font-display text-slate-900 font-bold text-lg leading-tight">{trip.name}</h3>
+              <p className="text-slate-600 text-xs flex items-center gap-1 mt-0.5">
                 <MapPin className="w-3 h-3" />{trip.stops.length} {trip.stops.length === 1 ? 'city' : 'cities'}
               </p>
             </div>
           </div>
           <div className="p-4 flex items-center justify-between">
-            <div className="flex gap-4 text-xs text-gt-muted">
+            <div className="flex gap-4 text-xs text-slate-500">
               <span className="flex items-center gap-1"><Calendar className="w-3.5 h-3.5" />{nights}n</span>
               <span className="flex items-center gap-1"><DollarSign className="w-3.5 h-3.5" />${trip.budget.toLocaleString()}</span>
             </div>
-            <ArrowRight className="w-4 h-4 text-amber-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <ArrowRight className="w-4 h-4 text-amber-600 opacity-0 group-hover:opacity-100 transition-opacity" />
           </div>
         </div>
       </Link>
@@ -64,6 +84,14 @@ function TripCard({ trip }: { trip: Trip }) {
 }
 
 function CityCard({ city, index }: { city: typeof mockCities[0]; index: number }) {
+  const openGlobe = useGlobeStore((s) => s.openGlobe);
+
+  const handleGlobeClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    openGlobe(city.lat ?? 35.6762, city.lng ?? 139.6503, city.name);
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -71,26 +99,33 @@ function CityCard({ city, index }: { city: typeof mockCities[0]; index: number }
       transition={{ delay: index * 0.05 }}
       whileHover={{ y: -3 }}
     >
-      <Link href="/city-search">
-        <div className="relative h-52 rounded-2xl overflow-hidden cursor-pointer group">
-          <img
-            src={city.coverPhoto}
-            alt={city.name}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-          />
-          <div className="img-overlay" />
-          <div className="absolute inset-0 flex flex-col justify-end p-4">
-            <h3 className="text-white font-bold text-base">{city.name}</h3>
-            <p className="text-white/60 text-xs">{city.country}</p>
-            <div className="flex items-center gap-2 mt-1.5">
-              <span className={`badge badge-amber text-xs`}>${city.avgDailyCostUSD}/day</span>
-              <span className="flex items-center gap-0.5 text-amber-400 text-xs">
-                <Star className="w-3 h-3 fill-amber-400" />{city.popularityScore}
-              </span>
-            </div>
+      <div className="relative h-52 rounded-2xl overflow-hidden cursor-pointer group" onClick={handleGlobeClick}>
+        <img
+          src={city.coverPhoto}
+          alt={city.name}
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+        />
+        <div className="img-overlay" />
+        <div className="absolute top-3 right-3">
+          <button
+            onClick={handleGlobeClick}
+            className="p-2 rounded-full bg-white/80 hover:bg-white text-amber-600 shadow-md transition-transform hover:scale-110"
+            title="View on 3D Globe"
+          >
+            <Globe className="w-4 h-4" />
+          </button>
+        </div>
+        <div className="absolute inset-0 flex flex-col justify-end p-4 pointer-events-none">
+          <h3 className="text-slate-900 font-bold text-base">{city.name}</h3>
+          <p className="text-slate-500 text-xs">{city.country}</p>
+          <div className="flex items-center gap-2 mt-1.5">
+            <span className={`badge badge-amber text-xs`}>${city.avgDailyCostUSD}/day</span>
+            <span className="flex items-center gap-0.5 text-amber-600 text-xs">
+              <Star className="w-3 h-3 fill-amber-400" />{city.popularityScore}
+            </span>
           </div>
         </div>
-      </Link>
+      </div>
     </motion.div>
   );
 }
@@ -106,7 +141,7 @@ export default function DashboardPage() {
 
   const stats = [
     { label: 'Trips Planned', value: trips.length, icon: MapIcon, color: 'text-blue-400' },
-    { label: 'Cities Visited', value: trips.reduce((a, t) => a + t.stops.length, 0), icon: MapPin, color: 'text-amber-400' },
+    { label: 'Cities Visited', value: trips.reduce((a, t) => a + t.stops.length, 0), icon: MapPin, color: 'text-amber-600' },
     { label: 'Total Budget', value: `$${trips.reduce((a, t) => a + t.budget, 0).toLocaleString()}`, icon: DollarSign, color: 'text-green-400' },
     { label: 'Upcoming Trips', value: upcoming.length, icon: TrendingUp, color: 'text-purple-400' },
   ];
@@ -124,7 +159,7 @@ export default function DashboardPage() {
             Where to next,{' '}
             <span className="gradient-text">{firstName}?</span>
           </motion.h1>
-          <p className="text-gt-muted mt-1.5">Plan, discover, and share your perfect journey.</p>
+          <p className="text-slate-500 mt-1.5">Plan, discover, and share your perfect journey.</p>
         </div>
         <Link href="/trips/new">
           <button className="btn-primary">
@@ -146,7 +181,7 @@ export default function DashboardPage() {
               <Icon className="w-5 h-5" />
             </div>
             <p className="font-bold text-xl">{value}</p>
-            <p className="text-gt-muted text-xs mt-0.5">{label}</p>
+            <p className="text-slate-500 text-xs mt-0.5">{label}</p>
           </motion.div>
         ))}
       </div>
@@ -156,7 +191,7 @@ export default function DashboardPage() {
         <section>
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-display text-xl font-bold">My Trips</h2>
-            <Link href="/trips" className="text-amber-400 text-sm hover:text-amber-300 flex items-center gap-1">
+            <Link href="/trips" className="text-amber-600 text-sm hover:text-amber-300 flex items-center gap-1">
               View all <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
@@ -172,7 +207,7 @@ export default function DashboardPage() {
       <section>
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-display text-xl font-bold">Discover Destinations</h2>
-          <Link href="/city-search" className="text-amber-400 text-sm hover:text-amber-300 flex items-center gap-1">
+          <Link href="/city-search" className="text-amber-600 text-sm hover:text-amber-300 flex items-center gap-1">
             Explore all <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
@@ -193,11 +228,11 @@ export default function DashboardPage() {
                 <motion.div className="glass p-5 rounded-xl hover:border-amber-500/20 transition-colors cursor-pointer" whileHover={{ y: -2 }}>
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="font-semibold text-sm">{trip.name}</h3>
-                    <DollarSign className="w-4 h-4 text-amber-400" />
+                    <DollarSign className="w-4 h-4 text-amber-600" />
                   </div>
                   <p className="font-bold text-2xl gradient-text">${trip.budget.toLocaleString()}</p>
-                  <p className="text-gt-muted text-xs mt-1">Total budget</p>
-                  <div className="mt-3 h-1.5 bg-white/[0.06] rounded-full overflow-hidden">
+                  <p className="text-slate-500 text-xs mt-1">Total budget</p>
+                  <div className="mt-3 h-1.5 bg-black/[0.04] rounded-full overflow-hidden">
                     <div
                       className="h-full bg-gradient-to-r from-amber-500 to-amber-300 rounded-full"
                       style={{ width: `${Math.min(85, Math.random() * 60 + 30)}%` }}

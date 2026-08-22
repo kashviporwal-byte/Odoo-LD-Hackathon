@@ -45,7 +45,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       {/* Logo */}
       <div className={`flex items-center gap-3 p-4 mb-6 ${collapsed ? 'justify-center' : ''}`}>
         <div className="w-9 h-9 rounded-xl bg-amber-500 flex items-center justify-center flex-shrink-0">
-          <Globe className="w-4 h-4 text-[#080d1a]" strokeWidth={2.5} />
+          <Globe className="w-4 h-4 text-[#ffffff]" strokeWidth={2.5} />
         </div>
         {!collapsed && (
           <motion.span
@@ -79,7 +79,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
       {/* Bottom nav */}
       <div className="px-2 space-y-1 mb-4">
-        <div className="h-px bg-white/[0.06] my-3 mx-2" />
+        <div className="h-px bg-black/[0.04] my-3 mx-2" />
         {bottomNavItems.map(({ label, href, icon: Icon }) => {
           const active = pathname === href;
           return (
@@ -108,18 +108,18 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       {/* User */}
       {!collapsed && user && (
         <div className="p-3 mx-2 mb-2 glass-light rounded-xl flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full overflow-hidden bg-amber-500/20 flex-shrink-0">
+          <div className="w-8 h-8 rounded-full overflow-hidden bg-amber-500/10 flex-shrink-0">
             {user.avatarUrl ? (
               <img src={user.avatarUrl} alt={user.name} className="w-full h-full object-cover" />
             ) : (
-              <span className="w-full h-full flex items-center justify-center text-amber-400 text-sm font-bold">
+              <span className="w-full h-full flex items-center justify-center text-amber-600 text-sm font-bold">
                 {user.name[0]}
               </span>
             )}
           </div>
           <div className="min-w-0">
             <p className="text-xs font-semibold truncate">{user.name}</p>
-            <p className="text-xs text-gt-muted truncate">{user.email}</p>
+            <p className="text-xs text-slate-500 truncate">{user.email}</p>
           </div>
         </div>
       )}
@@ -139,7 +139,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         {/* Collapse toggle */}
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="absolute right-0 top-14 translate-x-1/2 w-6 h-6 rounded-full glass border border-white/10 flex items-center justify-center text-gt-muted hover:text-gt-text transition-colors z-10"
+          className="absolute right-0 top-14 translate-x-1/2 w-6 h-6 rounded-full glass border border-black/10 flex items-center justify-center text-slate-500 hover:text-gt-text transition-colors z-10"
         >
           <motion.div animate={{ rotate: collapsed ? 180 : 0 }} transition={{ duration: 0.25 }}>
             <ChevronLeft className="w-3.5 h-3.5" />
@@ -169,7 +169,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <header className="flex items-center justify-between px-4 lg:px-6 h-14 border-b border-white/[0.06] flex-shrink-0">
           <button
             onClick={() => setMobileOpen(true)}
-            className="lg:hidden text-gt-muted hover:text-gt-text"
+            className="lg:hidden text-slate-500 hover:text-gt-text"
           >
             <Menu className="w-5 h-5" />
           </button>
@@ -177,16 +177,16 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           <div className="flex items-center gap-3">
             {user && (
               <Link href="/profile" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-                <div className="w-8 h-8 rounded-full overflow-hidden bg-amber-500/20">
+                <div className="w-8 h-8 rounded-full overflow-hidden bg-amber-500/10">
                   {user.avatarUrl ? (
                     <img src={user.avatarUrl} alt={user.name} className="w-full h-full object-cover" />
                   ) : (
-                    <span className="w-full h-full flex items-center justify-center text-amber-400 text-xs font-bold">
+                    <span className="w-full h-full flex items-center justify-center text-amber-600 text-xs font-bold">
                       {user.name[0]}
                     </span>
                   )}
                 </div>
-                <span className="hidden sm:block text-sm font-medium text-gt-muted">{user.name}</span>
+                <span className="hidden sm:block text-sm font-medium text-slate-500">{user.name}</span>
               </Link>
             )}
           </div>
