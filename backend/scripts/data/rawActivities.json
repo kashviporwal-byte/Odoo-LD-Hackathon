@@ -1,0 +1,202 @@
+[
+  {
+    "cityName": "Paris",
+    "activities": [
+      {
+        "name": "Eiffel Tower Summit Access",
+        "type": "sightseeing",
+        "cost": 35.00,
+        "duration": 150,
+        "description": "Ascend to the summit of the iconic Eiffel Tower for panoramic 360-degree views over Paris.",
+        "image_url": "https://images.unsplash.com/photo-1543349689-9a4d426bee8e?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        "name": "Louvre Museum Masterpieces Tour",
+        "type": "sightseeing",
+        "cost": 22.00,
+        "duration": 180,
+        "description": "Explore the world's greatest art museum including the Mona Lisa, Venus de Milo, and Winged Victory.",
+        "image_url": "https://images.unsplash.com/photo-1499856871958-5b9627545d1a?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        "name": "Seine River Evening Dinner Cruise",
+        "type": "food",
+        "cost": 85.00,
+        "duration": 150,
+        "description": "Gourmet 3-course French dining while gliding past illuminated Parisian monuments.",
+        "image_url": "https://images.unsplash.com/photo-1509299349698-dd22323b5963?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        "name": "Montmartre & Sacré-Cœur Walking Tour",
+        "type": "sightseeing",
+        "cost": 15.00,
+        "duration": 120,
+        "description": "Discover bohemian alleys, artist squares, and the highest point in Paris.",
+        "image_url": "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=800&q=80"
+      }
+    ]
+  },
+  {
+    "cityName": "Rome",
+    "activities": [
+      {
+        "name": "Colosseum & Roman Forum VIP Tour",
+        "type": "sightseeing",
+        "cost": 45.00,
+        "duration": 180,
+        "description": "Step back into ancient gladiatorial history with skip-the-line arena access.",
+        "image_url": "https://images.unsplash.com/photo-1552832230-c0197dd311b5?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        "name": "Vatican Museums & Sistine Chapel",
+        "type": "sightseeing",
+        "cost": 38.00,
+        "duration": 210,
+        "description": "Marvel at Michelangelo's ceiling frescoes and the immense Papal collections.",
+        "image_url": "https://images.unsplash.com/photo-1531572753322-ad063cecc140?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        "name": "Trastevere Street Food & Wine Crawl",
+        "type": "food",
+        "cost": 55.00,
+        "duration": 180,
+        "description": "Taste authentic Roman suppli, crispy pizza al taglio, artisan gelato, and regional wines.",
+        "image_url": "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80"
+      }
+    ]
+  },
+  {
+    "cityName": "Tokyo",
+    "activities": [
+      {
+        "name": "teamLab Planets Immersive Digital Art",
+        "type": "sightseeing",
+        "cost": 28.00,
+        "duration": 120,
+        "description": "Walk through water and dynamic digital light installations in Toyosu.",
+        "image_url": "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        "name": "Tsukiji Outer Market Gourmet Food Tour",
+        "type": "food",
+        "cost": 40.00,
+        "duration": 150,
+        "description": "Sample fresh sashimi, wagyu skewers, tamagoyaki, and matcha desserts.",
+        "image_url": "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        "name": "Mount Fuji & Hakone Day Trip",
+        "type": "adventure",
+        "cost": 95.00,
+        "duration": 540,
+        "description": "Scenic bus ride to Mt Fuji 5th Station, Lake Ashi pirate boat cruise, and Hakone ropeway.",
+        "image_url": "https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?auto=format&fit=crop&w=800&q=80"
+      }
+    ]
+  },
+  {
+    "cityName": "Kyoto",
+    "activities": [
+      {
+        "name": "Fushimi Inari Shrine Thousand Torii Gates",
+        "type": "adventure",
+        "cost": 0.00,
+        "duration": 180,
+        "description": "Hike through thousands of bright vermillion torii gates winding up sacred Mount Inari.",
+        "image_url": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        "name": "Traditional Tea Ceremony Experience",
+        "type": "sightseeing",
+        "cost": 30.00,
+        "duration": 90,
+        "description": "Learn the zen philosophy and rituals of authentic Japanese matcha preparation.",
+        "image_url": "https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=800&q=80"
+      }
+    ]
+  },
+  {
+    "cityName": "Barcelona",
+    "activities": [
+      {
+        "name": "Sagrada Família Fast-Track & Towers Tour",
+        "type": "sightseeing",
+        "cost": 36.00,
+        "duration": 120,
+        "description": "Marvel at Antoni Gaudí's masterpiece basilica, soaring stained-glass light, and tower views.",
+        "image_url": "https://images.unsplash.com/photo-1583422409516-2895a77efded?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        "name": "Tapas & Flamenco Show in Gothic Quarter",
+        "type": "food",
+        "cost": 50.00,
+        "duration": 180,
+        "description": "Passionate live flamenco performance accompanied by sangria and traditional tapas.",
+        "image_url": "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?auto=format&fit=crop&w=800&q=80"
+      }
+    ]
+  },
+  {
+    "cityName": "London",
+    "activities": [
+      {
+        "name": "Tower of London & Crown Jewels",
+        "type": "sightseeing",
+        "cost": 34.00,
+        "duration": 180,
+        "description": "Historic fortress, Beefeater tour, Raven guards, and the dazzling Crown Jewels.",
+        "image_url": "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        "name": "London Eye Observation Pod",
+        "type": "sightseeing",
+        "cost": 36.00,
+        "duration": 45,
+        "description": "Soar 135 meters above the River Thames for views of Big Ben and Parliament.",
+        "image_url": "https://images.unsplash.com/photo-1486299267070-83823f5448dd?auto=format&fit=crop&w=800&q=80"
+      }
+    ]
+  },
+  {
+    "cityName": "Amsterdam",
+    "activities": [
+      {
+        "name": "Canal Ring Cruise with Cheese & Drinks",
+        "type": "sightseeing",
+        "cost": 25.00,
+        "duration": 90,
+        "description": "Glide along UNESCO world heritage canals passing 17th-century merchant houses.",
+        "image_url": "https://images.unsplash.com/photo-1512470876302-972faa2aa9a4?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        "name": "Zaanse Schans Windmills Bike Tour",
+        "type": "adventure",
+        "cost": 40.00,
+        "duration": 240,
+        "description": "Cycle through Dutch countryside, historic working windmills, and clog workshops.",
+        "image_url": "https://images.unsplash.com/photo-1508672019048-805b876b67e2?auto=format&fit=crop&w=800&q=80"
+      }
+    ]
+  },
+  {
+    "cityName": "Dubai",
+    "activities": [
+      {
+        "name": "Burj Khalifa At The Top (124th & 125th Floor)",
+        "type": "sightseeing",
+        "cost": 48.00,
+        "duration": 120,
+        "description": "Ride high-speed elevators up the world's tallest tower for unmatched desert & ocean vistas.",
+        "image_url": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        "name": "Desert 4x4 Dune Bashing & BBQ Camp",
+        "type": "adventure",
+        "cost": 65.00,
+        "duration": 360,
+        "description": "Thrilling dune drive, camel riding, sandboarding, falconry, and barbecue under the stars.",
+        "image_url": "https://images.unsplash.com/photo-1451337516015-6b6e9a44a8a3?auto=format&fit=crop&w=800&q=80"
+      }
+    ]
+  }
+]
