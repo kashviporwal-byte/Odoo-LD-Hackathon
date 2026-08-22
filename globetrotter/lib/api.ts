@@ -252,12 +252,18 @@ export const sharingApi = {
 // 8. Admin API
 // ==========================================
 export const adminApi = {
-  getMetrics: () => request<{ metrics: any }>('/admin/metrics'),
+  getStats: () => request<{ totalTrips: number; totalUsers: number; tripsTrend: { date: string; count: number }[] }>('/admin/stats'),
 
-  getUsers: (params?: { page?: number; limit?: number }) => {
-    const qs = params ? `?page=${params.page || 1}&limit=${params.limit || 20}` : '';
-    return request<{ users: any[]; total: number }>(`/admin/users${qs}`);
-  },
+  getTopCities: () => request<{ city: string; country: string; count: number }[]>('/admin/top-cities'),
+
+  getTopActivities: () => request<{ name: string; type: string; count: number }[]>('/admin/top-activities'),
+
+  getUsers: () => request<{ id: number; name: string; email: string; role: string; tripsCount: number }[]>('/admin/users'),
+
+  toggleUserRole: (userId: string | number) =>
+    request<{ id: number; name: string; email: string; role: string }>(`/admin/users/${userId}`, {
+      method: 'PATCH',
+    }),
 
   toggleUserLock: (userId: string | number, is_active: boolean) =>
     request(`/admin/users/${userId}/lock`, {

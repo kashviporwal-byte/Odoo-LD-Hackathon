@@ -22,6 +22,25 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
+  // Admin-only route protection: decode JWT and enforce 'admin' role
+  if (pathname.startsWith('/admin') && sessionToken) {
+    try {
+      const parts = sessionToken.split('.');
+      if (parts.length >= 2) {
+        // Add base64 padding
+        const base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+        const padded = base64 + '='.repeat((4 - (base64.length % 4)) % 4);
+        const payloadStr = atob(padded);
+        const payload = JSON.parse(payloadStr);
+        if (payload.role !== 'admin') {
+          return NextResponse.redirect(new URL('/dashboard', request.url));
+        }
+      }
+    } catch {
+      // If JWT decode fails, let page-level guard handle it
+    }
+  }
+
   // If already logged in and visiting login, redirect to dashboard
   if (isAuthRoute && sessionToken) {
     return NextResponse.redirect(new URL('/dashboard', request.url));

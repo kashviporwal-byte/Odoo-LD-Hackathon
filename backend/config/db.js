@@ -26,14 +26,35 @@ let memoryDBInitialized = false;
 let memoryDB = {
   users: [
     {
+      id: 998,
+      name: 'System Administrator',
+      email: 'admin@globetrotter.io',
+      password_hash: '$2a$10$DNYXjJUjsTQSQrUCWi/KOe7ea6dTgUIfSgCuiRUzWfMxbJcQWnTaG', // Admin@123456
+      role: 'admin',
+      is_active: true,
+      language: 'en',
+      created_at: '2026-01-01T00:00:00.000Z'
+    },
+    {
       id: 999,
       name: 'Demo Traveler',
       email: 'traveler@odoo.com',
-      password_hash: '$2a$10$oA1Z7Z2mF8zYj9K6N8e3/eA1j2k3l4m5n6o7p8q9r0s1t2u3v4w5x',
+      password_hash: '$2a$10$2oTebpie3qIc5s8N7gDKi.pjuy5MfNnkUFi7tp75IWKp1NeXEhEmu',
       role: 'user',
       is_active: true,
-      language: 'en'
+      language: 'en',
+      created_at: '2026-02-15T00:00:00.000Z'
     },
+    {
+      id: 1000,
+      name: 'Alex Wanderer',
+      email: 'alex@example.com',
+      password_hash: '$2a$10$2oTebpie3qIc5s8N7gDKi.pjuy5MfNnkUFi7tp75IWKp1NeXEhEmu',
+      role: 'user',
+      is_active: true,
+      language: 'en',
+      created_at: '2026-03-10T00:00:00.000Z'
+    }
   ],
   trips: [
     {
@@ -44,13 +65,38 @@ let memoryDB = {
       end_date: '2026-07-10',
       description: 'Exciting trip through Paris, Amsterdam, and Rome',
       cover_photo_url: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=800',
+      created_at: '2026-08-10T12:00:00.000Z'
     },
+    {
+      id: 102,
+      user_id: 1000,
+      name: 'Japan Autumn Discovery',
+      start_date: '2026-10-05',
+      end_date: '2026-10-18',
+      description: 'Tokyo modernism and Kyoto traditional tea gardens',
+      cover_photo_url: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=800',
+      created_at: '2026-08-15T14:00:00.000Z'
+    },
+    {
+      id: 103,
+      user_id: 998,
+      name: 'Mediterranean Coastal Escape',
+      start_date: '2026-09-12',
+      end_date: '2026-09-22',
+      description: 'Barcelona tapas, Santorini sunsets, and Amalfi drives',
+      cover_photo_url: 'https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?auto=format&fit=crop&w=800',
+      created_at: '2026-08-20T09:00:00.000Z'
+    }
   ],
   cities: [],
   stops: [
-    { id: 501, trip_id: 101, city_id: 1, start_date: '2026-07-01', end_date: '2026-07-04', order_index: 0 },
+    { id: 501, trip_id: 101, city_id: 2, start_date: '2026-07-01', end_date: '2026-07-04', order_index: 0 },
     { id: 502, trip_id: 101, city_id: 7, start_date: '2026-07-05', end_date: '2026-07-07', order_index: 1 },
-    { id: 503, trip_id: 101, city_id: 2, start_date: '2026-07-08', end_date: '2026-07-10', order_index: 2 },
+    { id: 503, trip_id: 101, city_id: 9, start_date: '2026-07-08', end_date: '2026-07-10', order_index: 2 },
+    { id: 504, trip_id: 102, city_id: 1, start_date: '2026-10-05', end_date: '2026-10-10', order_index: 0 },
+    { id: 505, trip_id: 102, city_id: 11, start_date: '2026-10-11', end_date: '2026-10-18', order_index: 1 },
+    { id: 506, trip_id: 103, city_id: 5, start_date: '2026-09-12', end_date: '2026-09-17', order_index: 0 },
+    { id: 507, trip_id: 103, city_id: 13, start_date: '2026-09-18', end_date: '2026-09-22', order_index: 1 },
   ],
   activities: [],
   trip_activities: [
@@ -58,15 +104,28 @@ let memoryDB = {
     { id: 802, stop_id: 501, activity_id: 2, day_number: 2, time_slot: 'afternoon', cost: 22.00, custom_name: 'Louvre Museum Tour' },
     { id: 803, stop_id: 502, activity_id: 15, day_number: 5, time_slot: 'morning', cost: 25.00, custom_name: 'Canal Ring Cruise' },
     { id: 804, stop_id: 503, activity_id: 5, day_number: 8, time_slot: 'morning', cost: 45.00, custom_name: 'Colosseum VIP Tour' },
-  ],
+    { id: 805, stop_id: 504, activity_id: 3, day_number: 1, time_slot: 'morning', cost: 15.00, custom_name: 'Tsukiji Outer Market Food Tour' },
+    { id: 806, stop_id: 506, activity_id: 4, day_number: 1, time_slot: 'morning', cost: 30.00, custom_name: 'Sagrada Família Guided Tour' },
+    { id: 807, stop_id: 507, activity_id: 6, day_number: 1, time_slot: 'evening', cost: 65.00, custom_name: 'Oia Sunset Catamaran Cruise' },
+  ]
 };
 
 function initMemoryDB() {
   if (memoryDBInitialized) return;
   try {
     const bcrypt = require('bcryptjs');
-    if (memoryDB.users[0]) {
-      memoryDB.users[0].password_hash = bcrypt.hashSync('password123', 10);
+    // Set explicit known hashes
+    const adminUser = memoryDB.users.find(u => u.email === 'admin@globetrotter.io');
+    if (adminUser) {
+      adminUser.password_hash = bcrypt.hashSync('Admin@123456', 10);
+    }
+    const demoUser = memoryDB.users.find(u => u.email === 'traveler@odoo.com');
+    if (demoUser) {
+      demoUser.password_hash = bcrypt.hashSync('password123', 10);
+    }
+    const alexUser = memoryDB.users.find(u => u.email === 'alex@example.com');
+    if (alexUser) {
+      alexUser.password_hash = bcrypt.hashSync('password123', 10);
     }
     const rawCitiesPath = path.join(__dirname, '..', 'scripts', 'data', 'rawCities.json');
     const rawActivitiesPath = path.join(__dirname, '..', 'scripts', 'data', 'rawActivities.json');
@@ -113,6 +172,93 @@ async function query(text, params = []) {
 function handleMemoryQuery(text, params) {
   const sql = text.trim();
   const lower = sql.toLowerCase();
+
+  // 0. ADMIN SPECIFIC QUERIES (High precedence)
+  // 0.1 Total Users Count
+  if (lower.includes('count(*) as count from users')) {
+    return { rows: [{ count: memoryDB.users.length }] };
+  }
+
+  // 0.2 Total Trips Count
+  if (lower.includes('count(*) as count from trips')) {
+    return { rows: [{ count: memoryDB.trips.length }] };
+  }
+
+  // 0.3 Trips Trend (last 10 days)
+  if (lower.includes('group by date(created_at)') || (lower.includes('from trips') && lower.includes('date(created_at)'))) {
+    const trendMap = {};
+    memoryDB.trips.forEach((t) => {
+      const d = (t.created_at || new Date().toISOString()).split('T')[0];
+      trendMap[d] = (trendMap[d] || 0) + 1;
+    });
+    const rows = Object.keys(trendMap).map((d) => ({ date: d, count: trendMap[d] }));
+    if (rows.length === 0) {
+      rows.push({ date: new Date().toISOString().split('T')[0], count: memoryDB.trips.length });
+    }
+    return { rows };
+  }
+
+  // 0.4 Top Cities
+  if (lower.includes('from stops s') && lower.includes('join cities c')) {
+    const cityCounts = {};
+    memoryDB.stops.forEach((s) => {
+      const city = memoryDB.cities.find((c) => c.id === s.city_id) || { name: 'Paris', country: 'France' };
+      const key = `${city.name}::${city.country}`;
+      cityCounts[key] = (cityCounts[key] || 0) + 1;
+    });
+    const rows = Object.keys(cityCounts)
+      .map((k) => {
+        const [city_name, country] = k.split('::');
+        return { city_name, country, count: cityCounts[k] };
+      })
+      .sort((a, b) => b.count - a.count);
+    return { rows: rows.length > 0 ? rows : [{ city_name: 'Paris', country: 'France', count: 3 }, { city_name: 'Tokyo', country: 'Japan', count: 2 }] };
+  }
+
+  // 0.5 Top Activities
+  if (lower.includes('from trip_activities ta') && lower.includes('join activities a')) {
+    const actCounts = {};
+    memoryDB.trip_activities.forEach((ta) => {
+      const name = ta.activity_name || ta.custom_name || 'Activity';
+      const type = ta.type || 'sightseeing';
+      const key = `${name}::${type}`;
+      actCounts[key] = (actCounts[key] || 0) + 1;
+    });
+    const rows = Object.keys(actCounts)
+      .map((k) => {
+        const [activity_name, type] = k.split('::');
+        return { activity_name, type, count: actCounts[k] };
+      })
+      .sort((a, b) => b.count - a.count);
+    return { rows: rows.length > 0 ? rows : [{ activity_name: 'Eiffel Tower Tour', type: 'sightseeing', count: 2 }] };
+  }
+
+  // 0.6 Admin Users List with Trips Count
+  if (lower.includes('from users u') && (lower.includes('trips_count') || lower.includes('count(t.id)'))) {
+    const rows = memoryDB.users.map((u) => {
+      const tripsCount = memoryDB.trips.filter((t) => t.user_id === u.id).length;
+      return {
+        id: u.id,
+        name: u.name,
+        email: u.email,
+        role: u.role || 'user',
+        trips_count: tripsCount,
+        created_at: u.created_at || '2026-01-01T00:00:00.000Z',
+      };
+    });
+    return { rows };
+  }
+
+  // 0.7 Toggle Role
+  if (lower.startsWith('update users') && lower.includes('case when role =')) {
+    const userId = parseInt(params[0], 10);
+    const user = memoryDB.users.find((u) => u.id === userId);
+    if (user) {
+      user.role = user.role === 'admin' ? 'user' : 'admin';
+      return { rows: [{ id: user.id, name: user.name, email: user.email, role: user.role }] };
+    }
+    return { rows: [] };
+  }
 
   // 1. COUNT CITIES
   if (lower.startsWith('select count(*)') && lower.includes('from cities')) {
@@ -451,22 +597,91 @@ function handleMemoryQuery(text, params) {
     };
   }
 
-  // 20. ADMIN STATS / COUNT QUERIES
-  if (lower.includes('count(distinct') || (lower.includes('count(*)') && !lower.includes('from cities'))) {
-    return {
-      rows: [
-        {
-          total_trips: memoryDB.trips.length,
-          total_users: memoryDB.users.length,
-          total_stops: memoryDB.stops.length,
-          total_activities: memoryDB.trip_activities.length,
-          total: memoryDB.trips.length,
-          city_name: 'Paris',
-          activity_name: 'Eiffel Tower Tour',
-          count: 5,
-        },
-      ],
-    };
+  // 20. ADMIN SPECIFIC QUERIES
+  // 20.1 Total Users Count
+  if (lower.includes('count(*) as count from users') || (lower.includes('count(*)') && lower.includes('from users') && !lower.includes('group by'))) {
+    return { rows: [{ count: memoryDB.users.length }] };
+  }
+
+  // 20.2 Total Trips Count
+  if (lower.includes('count(*) as count from trips') || (lower.includes('count(*)') && lower.includes('from trips') && !lower.includes('group by'))) {
+    return { rows: [{ count: memoryDB.trips.length }] };
+  }
+
+  // 20.3 Trips Trend (last 10 days)
+  if (lower.includes('group by date(created_at)') || (lower.includes('from trips') && lower.includes('date(created_at)'))) {
+    const trendMap = {};
+    memoryDB.trips.forEach((t) => {
+      const d = (t.created_at || new Date().toISOString()).split('T')[0];
+      trendMap[d] = (trendMap[d] || 0) + 1;
+    });
+    const rows = Object.keys(trendMap).map((d) => ({ date: d, count: trendMap[d] }));
+    if (rows.length === 0) {
+      rows.push({ date: new Date().toISOString().split('T')[0], count: memoryDB.trips.length });
+    }
+    return { rows };
+  }
+
+  // 20.4 Top Cities
+  if (lower.includes('from stops s') && lower.includes('join cities c')) {
+    const cityCounts = {};
+    memoryDB.stops.forEach((s) => {
+      const city = memoryDB.cities.find((c) => c.id === s.city_id) || { name: 'Paris', country: 'France' };
+      const key = `${city.name}::${city.country}`;
+      cityCounts[key] = (cityCounts[key] || 0) + 1;
+    });
+    const rows = Object.keys(cityCounts)
+      .map((k) => {
+        const [city_name, country] = k.split('::');
+        return { city_name, country, count: cityCounts[k] };
+      })
+      .sort((a, b) => b.count - a.count);
+    return { rows: rows.length > 0 ? rows : [{ city_name: 'Paris', country: 'France', count: 3 }, { city_name: 'Tokyo', country: 'Japan', count: 2 }] };
+  }
+
+  // 20.5 Top Activities
+  if (lower.includes('from trip_activities ta') && lower.includes('join activities a')) {
+    const actCounts = {};
+    memoryDB.trip_activities.forEach((ta) => {
+      const name = ta.activity_name || ta.custom_name || 'Activity';
+      const type = ta.type || 'sightseeing';
+      const key = `${name}::${type}`;
+      actCounts[key] = (actCounts[key] || 0) + 1;
+    });
+    const rows = Object.keys(actCounts)
+      .map((k) => {
+        const [activity_name, type] = k.split('::');
+        return { activity_name, type, count: actCounts[k] };
+      })
+      .sort((a, b) => b.count - a.count);
+    return { rows: rows.length > 0 ? rows : [{ activity_name: 'Eiffel Tower Tour', type: 'sightseeing', count: 2 }] };
+  }
+
+  // 20.6 Admin Users List with Trips Count
+  if (lower.includes('from users u') && lower.includes('trips_count')) {
+    const rows = memoryDB.users.map((u) => {
+      const tripsCount = memoryDB.trips.filter((t) => t.user_id === u.id).length;
+      return {
+        id: u.id,
+        name: u.name,
+        email: u.email,
+        role: u.role || 'user',
+        trips_count: tripsCount,
+        created_at: u.created_at || '2026-01-01T00:00:00.000Z',
+      };
+    });
+    return { rows };
+  }
+
+  // 20.7 Toggle Role
+  if (lower.startsWith('update users') && lower.includes('case when role =')) {
+    const userId = parseInt(params[0], 10);
+    const user = memoryDB.users.find((u) => u.id === userId);
+    if (user) {
+      user.role = user.role === 'admin' ? 'user' : 'admin';
+      return { rows: [{ id: user.id, name: user.name, email: user.email, role: user.role }] };
+    }
+    return { rows: [] };
   }
 
   // 21. DELETE FROM USERS

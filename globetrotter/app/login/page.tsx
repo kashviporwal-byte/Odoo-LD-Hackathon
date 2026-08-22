@@ -224,6 +224,7 @@ function LoginPageContent() {
         if (res.user) {
           setAuth({
             id: res.user.id, name: res.user.name, email: res.user.email,
+            role: res.user.role || 'user',
             language: res.user.language || 'English', savedDestinations: [],
             tripsCount: 0, joinedAt: new Date().toISOString(),
           }, res.token);
@@ -236,6 +237,7 @@ function LoginPageContent() {
         if (res.user) {
           setAuth({
             id: res.user.id, name: res.user.name, email: res.user.email,
+            role: res.user.role || 'user',
             language: res.user.language || 'English', savedDestinations: [],
             tripsCount: 0, joinedAt: new Date().toISOString(),
           }, res.token);

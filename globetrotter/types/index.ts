@@ -76,6 +76,7 @@ export interface User {
   id: string;
   name: string;
   email: string;
+  role?: 'admin' | 'user' | string;
   avatarUrl?: string;
   language: string;
   savedDestinations: string[]; // cityIds

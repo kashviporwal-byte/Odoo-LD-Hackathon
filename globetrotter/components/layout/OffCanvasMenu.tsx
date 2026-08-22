@@ -138,39 +138,41 @@ export default function OffCanvasMenu() {
               <div className="my-4 h-px bg-black/[0.05] mx-2" />
 
               {/* Secondary Nav */}
-              {secondaryItems.map(({ label, href, icon: Icon }, i) => {
-                const active = isActive(href);
-                return (
-                  <motion.div
-                    key={href}
-                    initial={{ opacity: 0, x: -16 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.32 + i * 0.05, duration: 0.28 }}
-                  >
-                    <Link
-                      href={href}
-                      className={`group flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 ${
-                        active
-                          ? 'bg-amber-50 border border-amber-200/60'
-                          : 'hover:bg-black/[0.03]'
-                      }`}
+              {secondaryItems
+                .filter((item) => item.href !== '/admin' || user?.role === 'admin')
+                .map(({ label, href, icon: Icon }, i) => {
+                  const active = isActive(href);
+                  return (
+                    <motion.div
+                      key={href}
+                      initial={{ opacity: 0, x: -16 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.32 + i * 0.05, duration: 0.28 }}
                     >
-                      <Icon
-                        className={`w-4.5 h-4.5 flex-shrink-0 transition-colors ${
-                          active ? 'text-amber-600' : 'text-slate-400 group-hover:text-slate-700'
-                        }`}
-                      />
-                      <span
-                        className={`font-medium text-sm tracking-tight transition-colors ${
-                          active ? 'text-amber-700' : 'text-slate-500 group-hover:text-slate-800'
+                      <Link
+                        href={href}
+                        className={`group flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 ${
+                          active
+                            ? 'bg-amber-50 border border-amber-200/60'
+                            : 'hover:bg-black/[0.03]'
                         }`}
                       >
-                        {label}
-                      </span>
-                    </Link>
-                  </motion.div>
-                );
-              })}
+                        <Icon
+                          className={`w-4.5 h-4.5 flex-shrink-0 transition-colors ${
+                            active ? 'text-amber-600' : 'text-slate-400 group-hover:text-slate-700'
+                          }`}
+                        />
+                        <span
+                          className={`font-medium text-sm tracking-tight transition-colors ${
+                            active ? 'text-amber-700' : 'text-slate-500 group-hover:text-slate-800'
+                          }`}
+                        >
+                          {label}
+                        </span>
+                      </Link>
+                    </motion.div>
+                  );
+                })}
             </div>
 
             {/* Footer — user + logout */}
