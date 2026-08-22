@@ -19,6 +19,7 @@ import Timeline from './pages/Timeline';
 import PublicItinerary from './pages/PublicItinerary';
 import ProfileSettings from './pages/ProfileSettings';
 import AdminDashboard from './pages/AdminDashboard';
+import AiAssistant from './pages/AiAssistant';
 
 function App() {
   return (
@@ -29,7 +30,6 @@ function App() {
           <main className="flex-grow">
             <Routes>
               {/* Public Routes */}
-              <option value="" /> {/* Empty/stub routing option placeholder */}
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
               <Route path="/public/:token" element={<PublicItinerary />} />
@@ -112,6 +112,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <ProfileSettings />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/ai-assistant" 
+                element={
+                  <ProtectedRoute>
+                    <AiAssistant />
                   </ProtectedRoute>
                 } 
               />

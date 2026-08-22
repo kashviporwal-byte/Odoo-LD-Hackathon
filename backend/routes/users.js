@@ -13,19 +13,27 @@ router.use(authMiddleware);
  */
 router.get('/me', async (req, res, next) => {
   try {
-    // TODO: Person A retrieve user details by ID
-    // const result = await db.query('SELECT id, name, email, photo_url, language_pref, role, created_at FROM users WHERE id = $1', [req.user.id]);
-    
+    const result = await db.query(
+      'SELECT id, name, email, photo_url, language, role, is_active, created_at FROM users WHERE id = $1',
+      [req.user.id]
+    );
+    const dbUser = result.rows[0];
+
+    if (!dbUser) {
+      return res.status(404).json({ success: false, error: 'User not found.' });
+    }
+
     res.status(200).json({
       success: true,
       data: {
         user: {
-          id: req.user.id,
-          name: 'Demo Traveler',
-          email: req.user.email,
-          photo_url: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150',
-          language_pref: 'en',
-          role: req.user.role
+          id: dbUser.id,
+          name: dbUser.name,
+          email: dbUser.email,
+          photo_url: dbUser.photo_url,
+          language: dbUser.language,
+          language_pref: dbUser.language,
+          role: dbUser.role
         }
       }
     });
@@ -40,21 +48,39 @@ router.get('/me', async (req, res, next) => {
  * @access  Private (Person A)
  */
 router.put('/me', async (req, res, next) => {
-  const { name, photo_url, email, language_pref } = req.body;
+  const { name, photo_url, email, language, language_pref } = req.body;
+  const langVal = language || language_pref;
 
   try {
-    // TODO: Person A implement database update
+    const checkUser = await db.query('SELECT name, email, photo_url, language FROM users WHERE id = $1', [req.user.id]);
+    if (checkUser.rows.length === 0) {
+      return res.status(404).json({ success: false, error: 'User not found.' });
+    }
+
+    const current = checkUser.rows[0];
+    const newName = name !== undefined ? name : current.name;
+    const newEmail = email !== undefined ? email : current.email;
+    const newPhotoUrl = photo_url !== undefined ? photo_url : current.photo_url;
+    const newLang = langVal !== undefined ? langVal : current.language;
+
+    const result = await db.query(
+      'UPDATE users SET name = $1, email = $2, photo_url = $3, language = $4 WHERE id = $5 RETURNING id, name, email, photo_url, language, role',
+      [newName, newEmail, newPhotoUrl, newLang, req.user.id]
+    );
+    const updatedUser = result.rows[0];
+
     res.status(200).json({
       success: true,
-      message: 'Profile updated successfully (Stub).',
+      message: 'Profile updated successfully.',
       data: {
         user: {
-          id: req.user.id,
-          name: name || 'Demo Traveler',
-          email: email || req.user.email,
-          photo_url: photo_url || null,
-          language_pref: language_pref || 'en',
-          role: req.user.role
+          id: updatedUser.id,
+          name: updatedUser.name,
+          email: updatedUser.email,
+          photo_url: updatedUser.photo_url,
+          language: updatedUser.language,
+          language_pref: updatedUser.language,
+          role: updatedUser.role
         }
       }
     });
@@ -70,8 +96,7 @@ router.put('/me', async (req, res, next) => {
  */
 router.delete('/me', async (req, res, next) => {
   try {
-    // TODO: Person A implement cascade delete users
-    // await db.query('DELETE FROM users WHERE id = $1', [req.user.id]);
+    const result = await db.query('DELETE FROM users WHERE id = $1', [req.user.id]);
     
     res.status(200).json({
       success: true,
@@ -89,16 +114,18 @@ router.delete('/me', async (req, res, next) => {
  */
 router.get('/me/saved-destinations', async (req, res, next) => {
   try {
-    // TODO: Person A query saved destination list
-    // Mock response of saved destination cities
-    const savedCities = [
-      { id: 1, name: 'Paris', country: 'France', lat: 48.8566, lng: 2.3522, image_url: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=400' },
-      { id: 2, name: 'Tokyo', country: 'Japan', lat: 35.6762, lng: 139.6503, image_url: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=400' }
-    ];
+    const result = await db.query(
+      `SELECT DISTINCT c.id, c.name, c.country, c.lat, c.lng, c.region, c.image_url, c.cost_index, c.popularity
+       FROM cities c
+       JOIN stops s ON s.city_id = c.id
+       JOIN trips t ON s.trip_id = t.id
+       WHERE t.user_id = $1`,
+      [req.user.id]
+    );
 
     res.status(200).json({
       success: true,
-      data: savedCities
+      data: result.rows
     });
   } catch (error) {
     next(error);
