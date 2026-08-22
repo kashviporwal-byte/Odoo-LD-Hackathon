@@ -17,7 +17,7 @@ router.post('/:tripId/share', authMiddleware, async (req, res, next) => {
     const token = crypto.randomBytes(8).toString('hex');
 
     const result = await db.query(
-      'UPDATE trips SET share_token = $1 WHERE id = $2 AND user_id = $3 RETURNING share_token',
+      'UPDATE trips SET share_slug = $1 WHERE id = $2 AND user_id = $3 RETURNING share_slug',
       [token, tripId, req.user.id]
     );
 
@@ -29,7 +29,7 @@ router.post('/:tripId/share', authMiddleware, async (req, res, next) => {
       success: true,
       message: 'Trip shared successfully.',
       data: {
-        share_token: result.rows[0].share_token
+        share_slug: result.rows[0].share_slug
       }
     });
   } catch (error) {
@@ -48,7 +48,7 @@ router.get('/public/:token', async (req, res, next) => {
   try {
     // 1. Fetch Trip details
     const tripRes = await db.query(
-      'SELECT id, name, start_date, end_date, description, cover_photo_url FROM trips WHERE share_token = $1',
+      'SELECT id, name, start_date, end_date, description, cover_photo_url FROM trips WHERE share_slug = $1',
       [token]
     );
 
@@ -144,7 +144,7 @@ router.post('/public/:token/copy', authMiddleware, async (req, res, next) => {
 
     // 1. Fetch original trip configuration details
     const tripRes = await client.query(
-      'SELECT id, name, start_date, end_date, description, cover_photo_url FROM trips WHERE share_token = $1',
+      'SELECT id, name, start_date, end_date, description, cover_photo_url FROM trips WHERE share_slug = $1',
       [token]
     );
 
@@ -165,16 +165,16 @@ router.post('/public/:token/copy', authMiddleware, async (req, res, next) => {
 
     // 3. Fetch original stops
     const stopsRes = await client.query(
-      'SELECT id, city_id, start_date, end_date, order_index FROM stops WHERE trip_id = $1',
+      'SELECT id, city_id, arrival_date, departure_date, stop_order FROM stops WHERE trip_id = $1',
       [origTrip.id]
     );
 
     // Duplicate each stop and keep reference of old stop IDs to duplicate activities
     for (const stop of stopsRes.rows) {
       const cloneStopRes = await client.query(
-        `INSERT INTO stops (trip_id, city_id, start_date, end_date, order_index)
+        `INSERT INTO stops (trip_id, city_id, arrival_date, departure_date, stop_order)
          VALUES ($1, $2, $3, $4, $5) RETURNING id`,
-        [newTripId, stop.city_id, stop.start_date, stop.end_date, stop.order_index]
+        [newTripId, stop.city_id, stop.arrival_date, stop.departure_date, stop.stop_order]
       );
       const newStopId = cloneStopRes.rows[0].id;
 
@@ -196,16 +196,16 @@ router.post('/public/:token/copy', authMiddleware, async (req, res, next) => {
 
     // 4. Clone Budget config if available
     const budgetRes = await client.query(
-      'SELECT transport_cost, stay_cost, activity_cost, meal_cost, total_cost FROM budgets WHERE trip_id = $1',
+      'SELECT transport_cost, stay_cost, activities_cost, meals_cost FROM budgets WHERE trip_id = $1',
       [origTrip.id]
     );
 
     if (budgetRes.rows.length > 0) {
       const b = budgetRes.rows[0];
       await client.query(
-        `INSERT INTO budgets (trip_id, transport_cost, stay_cost, activity_cost, meal_cost, total_cost)
-         VALUES ($1, $2, $3, $4, $5, $6)`,
-        [newTripId, b.transport_cost, b.stay_cost, b.activity_cost, b.meal_cost, b.total_cost]
+        `INSERT INTO budgets (trip_id, transport_cost, stay_cost, activities_cost, meals_cost)
+         VALUES ($1, $2, $3, $4, $5)`,
+        [newTripId, b.transport_cost, b.stay_cost, b.activities_cost, b.meals_cost]
       );
     }
 
