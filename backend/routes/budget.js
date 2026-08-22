@@ -75,6 +75,17 @@ router.get('/:tripId', async (req, res, next) => {
       transportCost = (stopsCount - 1) * 100;
     }
 
+    // Check if the user has manually saved estimated costs in the budgets table
+    const budgetRes = await db.query(
+      'SELECT transport_cost, stay_cost, activities_cost, meals_cost FROM budgets WHERE trip_id = $1',
+      [tripId]
+    );
+    if (budgetRes.rows.length > 0) {
+      transportCost = parseFloat(budgetRes.rows[0].transport_cost) || transportCost;
+      stayCost = parseFloat(budgetRes.rows[0].stay_cost) || stayCost;
+      mealCost = parseFloat(budgetRes.rows[0].meals_cost) || mealCost;
+    }
+
     // 4. Fetch activity costs
     // Sum from selected trip activities
     let activityCost = 0;
@@ -161,6 +172,47 @@ router.get('/:tripId', async (req, res, next) => {
         dailyAverage,
         overBudgetDays
       }
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * @route   POST /api/budget/:tripId
+ * @desc    Upsert estimated transport, stay, and meal costs for a trip
+ * @access  Private (Person C)
+ */
+router.post('/:tripId', async (req, res, next) => {
+  const { tripId } = req.params;
+  const { transport_cost = 0, stay_cost = 0, meal_cost = 0 } = req.body;
+
+  try {
+    // Check if trip exists and belongs to the authenticated user
+    const tripCheck = await db.query(
+      'SELECT id FROM trips WHERE id = $1 AND user_id = $2',
+      [tripId, req.user.id]
+    );
+
+    if (tripCheck.rows.length === 0) {
+      return res.status(404).json({ success: false, error: 'Trip not found or unauthorized.' });
+    }
+
+    // Perform PostgreSQL Upsert using Person A's column names
+    await db.query(
+      `INSERT INTO budgets (trip_id, transport_cost, stay_cost, meals_cost)
+       VALUES ($1, $2, $3, $4)
+       ON CONFLICT (trip_id) 
+       DO UPDATE SET 
+         transport_cost = EXCLUDED.transport_cost,
+         stay_cost = EXCLUDED.stay_cost,
+         meals_cost = EXCLUDED.meals_cost`,
+      [tripId, transport_cost, stay_cost, meal_cost]
+    );
+
+    res.status(200).json({
+      success: true,
+      message: 'Budget parameters saved successfully.'
     });
   } catch (error) {
     next(error);
