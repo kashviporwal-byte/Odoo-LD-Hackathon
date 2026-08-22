@@ -29,7 +29,6 @@ function App() {
           <main className="flex-grow">
             <Routes>
               {/* Public Routes */}
-              <option value="" /> {/* Empty/stub routing option placeholder */}
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
               <Route path="/public/:token" element={<PublicItinerary />} />
