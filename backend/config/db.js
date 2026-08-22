@@ -192,6 +192,43 @@ function handleMemoryQuery(text, params) {
     };
   }
 
+  // 7. SELECT USERS
+  if (lower.includes('from users')) {
+    if (lower.includes('where email = $1')) {
+      const email = String(params[0]).toLowerCase();
+      const user = memoryDB.users.find((u) => u.email.toLowerCase() === email);
+      return { rows: user ? [user] : [] };
+    }
+    return { rows: memoryDB.users };
+  }
+
+  // 8. INSERT USER
+  if (lower.startsWith('insert into users')) {
+    const [name, email, password_hash, photo_url] = params;
+    const newUser = {
+      id: memoryDB.users.length + 1000,
+      name,
+      email,
+      password_hash,
+      photo_url: photo_url || null,
+      role: 'user',
+      is_active: true
+    };
+    memoryDB.users.push(newUser);
+    return { rows: [newUser] };
+  }
+
+  // 9. UPDATE USER
+  if (lower.startsWith('update users')) {
+    const photoUrl = params[0];
+    const userId = parseInt(params[1], 10);
+    const user = memoryDB.users.find((u) => u.id === userId);
+    if (user) {
+      user.photo_url = photoUrl;
+    }
+    return { rows: user ? [user] : [] };
+  }
+
   // Fallback generic empty response
   return { rows: [] };
 }
