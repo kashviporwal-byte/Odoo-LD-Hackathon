@@ -317,6 +317,7 @@ export default function NewTripPage() {
             {/* Navigation */}
             <div className="flex justify-between mt-6">
               <button
+                type="button"
                 onClick={() => setStep((s) => s - 1)}
                 className="btn-ghost"
                 disabled={step === 0}
@@ -326,6 +327,7 @@ export default function NewTripPage() {
               </button>
               {step < steps.length - 1 ? (
                 <button
+                  type="button"
                   onClick={() => setStep((s) => s + 1)}
                   className="btn-primary"
                   disabled={!canNext()}
@@ -333,131 +335,15 @@ export default function NewTripPage() {
                   Next <ArrowRight className="w-4 h-4" />
                 </button>
               ) : (
-                <button onClick={handleCreate} className="btn-primary" disabled={loading}>
+                <button type="button" onClick={handleCreate} className="btn-primary" disabled={loading}>
                   {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Check className="w-4 h-4" /> Confirm Trip</>}
                 </button>
->>>>>>> 14234b1 (feat: complete Google OAuth integration, day-wise timeline itinerary, server actions auth, and expanded multi-day activities)
               )}
-
-              {step === 1 && (
-                <div className="space-y-5">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-slate-500 mb-1.5">Start Date *</label>
-                      <input type="date" className="gt-input" value={form.startDate} onChange={(e) => update('startDate', e.target.value)} />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-slate-500 mb-1.5">End Date *</label>
-                      <input type="date" className="gt-input" value={form.endDate} onChange={(e) => update('endDate', e.target.value)} />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-500 mb-1.5">Total Budget (USD) *</label>
-                    <input
-                      type="number"
-                      className="gt-input"
-                      placeholder="2000"
-                      value={form.budget}
-                      onChange={(e) => update('budget', Number(e.target.value))}
-                      min={0}
-                    />
-                    <p className="text-xs text-slate-500 mt-1.5">Enter your estimated total trip budget</p>
-                  </div>
-                  <div className="grid grid-cols-3 gap-2">
-                    {[500, 1500, 3000, 5000, 8000, 15000].map((b) => (
-                      <button
-                        key={b}
-                        type="button"
-                        onClick={() => update('budget', b)}
-                        className={`py-2 px-3 rounded-lg text-sm font-medium transition-all ${form.budget === b ? 'bg-amber-500 text-[#ffffff]' : 'glass-light text-slate-500 hover:text-gt-text'}`}
-                      >
-                        ${b.toLocaleString()}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {step === 2 && (
-                <div className="space-y-5">
-                  <p className="text-sm text-slate-500">Choose a cover photo for your trip</p>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                    {coverOptions.map((url) => (
-                      <button
-                        key={url}
-                        type="button"
-                        onClick={() => update('coverPhoto', url)}
-                        className={`relative h-28 rounded-xl overflow-hidden transition-all ${form.coverPhoto === url ? 'ring-2 ring-amber-500' : 'opacity-70 hover:opacity-100'}`}
-                      >
-                        <img src={url} alt="Cover" className="w-full h-full object-cover" />
-                        {form.coverPhoto === url && (
-                          <div className="absolute inset-0 bg-amber-500/10 flex items-center justify-center">
-                            <Check className="w-6 h-6 text-amber-600" />
-                          </div>
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {step === 3 && (
-                <div className="space-y-5">
-                  <div className="relative h-48 rounded-xl overflow-hidden">
-                    <img src={form.coverPhoto} alt="Cover" className="w-full h-full object-cover" />
-                    <div className="img-overlay" />
-                    <div className="absolute bottom-4 left-4">
-                      <h2 className="font-display text-2xl font-bold text-slate-900">{form.name}</h2>
-                      {form.description && <p className="text-slate-600 text-sm mt-0.5 line-clamp-2">{form.description}</p>}
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    {[
-                      { label: 'Start Date', value: form.startDate || 'Not set' },
-                      { label: 'End Date', value: form.endDate || 'Not set' },
-                      { label: 'Budget', value: `$${form.budget.toLocaleString()}` },
-                      { label: 'Visibility', value: form.isPublic ? 'Public' : 'Private' },
-                    ].map(({ label, value }) => (
-                      <div key={label} className="glass-light p-3 rounded-xl">
-                        <p className="text-xs text-slate-500">{label}</p>
-                        <p className="font-semibold mt-0.5">{value}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </motion.div>
-          </AnimatePresence>
-        </div>
-
-        <div className="flex justify-between mt-6">
-          <button
-            type="button"
-            onClick={() => setStep((s) => s - 1)}
-            className="btn-ghost"
-            disabled={step === 0}
-            style={{ opacity: step === 0 ? 0.4 : 1 }}
-          >
-            <ArrowLeft className="w-4 h-4" /> Back
-          </button>
-          {step < steps.length - 1 ? (
-            <button
-              type="button"
-              onClick={() => setStep((s) => s + 1)}
-              className="btn-primary"
-              disabled={!canNext()}
-            >
-              Next <ArrowRight className="w-4 h-4" />
-            </button>
-          ) : (
-            <button type="button" onClick={handleCreate} className="btn-primary" disabled={loading}>
-              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Check className="w-4 h-4" /> Confirm Trip</>}
-            </button>
-          )}
-        </div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
     </div>
   );
 }
+
