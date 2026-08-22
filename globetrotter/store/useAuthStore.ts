@@ -4,14 +4,32 @@ import type { User } from '@/types';
 import { mockUser } from '@/lib/mockData';
 import { authApi } from '@/lib/api';
 
+interface UserSettings {
+  tripReminders: boolean;
+  newFeatures: boolean;
+  budgetAlerts: boolean;
+  profilePublic: boolean;
+  shareAnalytics: boolean;
+}
+
+const defaultSettings: UserSettings = {
+  tripReminders: true,
+  newFeatures: true,
+  budgetAlerts: false,
+  profilePublic: true,
+  shareAnalytics: false,
+};
+
 interface AuthState {
   user: User | null;
   token: string | null;
   isAuthenticated: boolean;
+  settings: UserSettings;
   login: (email: string, password: string) => Promise<boolean>;
   signup: (name: string, email: string, password: string) => Promise<boolean>;
   logout: () => void;
   updateUser: (updates: Partial<User>) => void;
+  updateSettings: (updates: Partial<UserSettings>) => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -20,6 +38,7 @@ export const useAuthStore = create<AuthState>()(
       user: null,
       token: null,
       isAuthenticated: false,
+      settings: defaultSettings,
 
       login: async (email: string, password: string) => {
         try {
@@ -100,6 +119,10 @@ export const useAuthStore = create<AuthState>()(
       updateUser: (updates: Partial<User>) => {
         const current = get().user;
         if (current) set({ user: { ...current, ...updates } });
+      },
+
+      updateSettings: (updates: Partial<UserSettings>) => {
+        set({ settings: { ...get().settings, ...updates } });
       },
     }),
     { name: 'globetrotter-auth' }

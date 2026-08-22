@@ -93,16 +93,16 @@ export const authApi = {
 // 2. Users API
 // ==========================================
 export const usersApi = {
-  getProfile: () => request<{ user: any }>('/users/profile'),
+  getProfile: () => request<{ user: any }>('/users/me'),
 
-  updateProfile: (data: { name?: string; photo_url?: string }) =>
-    request<{ user: any }>('/users/profile', {
+  updateProfile: (data: { name?: string; email?: string; photo_url?: string; language?: string }) =>
+    request<{ user: any }>('/users/me', {
       method: 'PUT',
       body: JSON.stringify(data),
     }),
 
   updatePreferences: (language: string) =>
-    request<{ user: any }>('/users/preferences', {
+    request<{ user: any }>('/users/me', {
       method: 'PUT',
       body: JSON.stringify({ language }),
     }),

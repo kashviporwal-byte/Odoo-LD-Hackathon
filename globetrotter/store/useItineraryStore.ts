@@ -89,18 +89,6 @@ export const useItineraryStore = create<ItineraryState>((set, get) => ({
       end_date: endDate,
       description: trip.description,
       cover_photo_url: trip.coverPhoto,
-    }).then((res) => {
-      if (res.success && res.data) {
-        const backendTrip = (res.data as any).trip || res.data;
-        if (backendTrip?.id) {
-          // Update the local trip with the real backend ID
-          set((s) => ({
-            trips: s.trips.map((t) =>
-              t.id === trip.id ? { ...t, id: String(backendTrip.id) } : t
-            ),
-          }));
-        }
-      }
     }).catch(() => {});
   },
 
@@ -187,7 +175,9 @@ export const useItineraryStore = create<ItineraryState>((set, get) => ({
               ...t,
               stops: t.stops.map((st) =>
                 st.id === stopId
-                  ? { ...st, activities: [...st.activities, activity] }
+                  ? st.activities.some((a) => a.id === activity.id)
+                    ? st
+                    : { ...st, activities: [...st.activities, activity] }
                   : st
               ),
             }

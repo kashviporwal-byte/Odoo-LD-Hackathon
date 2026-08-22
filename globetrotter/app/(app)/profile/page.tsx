@@ -1,35 +1,69 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import {
-  User, Mail, Globe, Trash2, Camera, Save,
-  Heart, MapPin, Settings, Bell, Shield, Loader2
+  User, Trash2, Camera, Save,
+  Heart, MapPin, Settings, Bell, Shield, Loader2,
 } from 'lucide-react';
 import { useAuthStore } from '@/store/useAuthStore';
+import { usersApi } from '@/lib/api';
 import { mockCities } from '@/lib/mockData';
-import Link from 'next/link';
 
-const languages = ['English', 'Spanish', 'French', 'Japanese', 'Arabic', 'Portuguese', 'German'];
+function Toggle({ on, onChange, label }: { on: boolean; onChange: (v: boolean) => void; label: string }) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={on}
+      aria-label={label}
+      onClick={() => onChange(!on)}
+      className={`w-11 h-6 rounded-full relative flex-shrink-0 transition-colors duration-200 ${
+        on ? 'bg-amber-500' : 'bg-black/10'
+      }`}
+    >
+      <div
+        className={`w-5 h-5 rounded-full bg-white shadow absolute top-0.5 transition-all duration-200 ${
+          on ? 'right-0.5' : 'left-0.5'
+        }`}
+      />
+    </button>
+  );
+}
 
 export default function ProfilePage() {
-  const { user, updateUser, logout } = useAuthStore();
+  const { user, settings, updateUser, updateSettings, logout } = useAuthStore();
   const [form, setForm] = useState({
     name: user?.name ?? '',
     email: user?.email ?? '',
-    language: user?.language ?? 'English',
   });
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
   const [activeTab, setActiveTab] = useState<'profile' | 'preferences' | 'privacy'>('profile');
 
+  useEffect(() => {
+    if (user) {
+      setForm({ name: user.name, email: user.email });
+    }
+  }, [user?.id, user?.name, user?.email]);
+
   const savedCities = mockCities.filter((c) => user?.savedDestinations.includes(c.id));
 
   const handleSave = async () => {
     setSaving(true);
-    await new Promise((r) => setTimeout(r, 700));
-    updateUser(form);
+    const payload = { name: form.name, email: form.email };
+
+    const res = await usersApi.updateProfile(payload);
+    if (res.success && res.data?.user) {
+      updateUser({
+        name: res.data.user.name ?? form.name,
+        email: res.data.user.email ?? form.email,
+      });
+    } else {
+      updateUser({ name: form.name, email: form.email });
+    }
+
     setSaving(false);
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
@@ -60,7 +94,7 @@ export default function ProfilePage() {
               <span className="text-amber-600 font-bold text-3xl">{user.name[0]}</span>
             )}
           </div>
-          <button className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-amber-500 flex items-center justify-center text-[#ffffff]">
+          <button type="button" className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-amber-500 flex items-center justify-center text-[#ffffff]">
             <Camera className="w-3.5 h-3.5" />
           </button>
         </div>
@@ -70,7 +104,6 @@ export default function ProfilePage() {
           <div className="flex gap-3 mt-2 text-xs text-slate-500">
             <span className="flex items-center gap-1"><MapPin className="w-3 h-3 text-amber-600" />{user.tripsCount} trips</span>
             <span className="flex items-center gap-1"><Heart className="w-3 h-3 text-red-400" />{user.savedDestinations.length} saved</span>
-            <span className="flex items-center gap-1"><Globe className="w-3 h-3 text-blue-400" />{user.language}</span>
           </div>
         </div>
         <div className="flex flex-col items-end gap-2">
@@ -83,6 +116,7 @@ export default function ProfilePage() {
         {tabs.map(({ id, label, icon: Icon }) => (
           <button
             key={id}
+            type="button"
             onClick={() => setActiveTab(id)}
             className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition-all ${
               activeTab === id ? 'bg-amber-500 text-[#ffffff]' : 'text-slate-500 hover:text-gt-text'
@@ -123,20 +157,7 @@ export default function ProfilePage() {
                 placeholder="your@email.com"
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-500 mb-1.5">Language</label>
-              <select
-                className="gt-input"
-                value={form.language}
-                onChange={(e) => setForm((p) => ({ ...p, language: e.target.value }))}
-                style={{ background: 'rgba(255,255,255,0.05)', color: 'var(--color-text)' }}
-              >
-                {languages.map((l) => (
-                  <option key={l} value={l} style={{ background: '#ffffff' }}>{l}</option>
-                ))}
-              </select>
-            </div>
-            <button onClick={handleSave} className="btn-primary" disabled={saving}>
+            <button type="button" onClick={handleSave} className="btn-primary" disabled={saving}>
               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : saved ? '✓ Saved!' : <><Save className="w-4 h-4" /> Save Changes</>}
             </button>
           </>
@@ -167,18 +188,20 @@ export default function ProfilePage() {
             <div>
               <h3 className="font-semibold mb-3 flex items-center gap-2"><Bell className="w-4 h-4 text-amber-600" /> Notifications</h3>
               {[
-                { label: 'Trip reminders', desc: 'Get notified before your trips' },
-                { label: 'New features', desc: 'Updates on new app features' },
-                { label: 'Budget alerts', desc: 'Alert when nearing budget limit' },
-              ].map((item, i) => (
-                <div key={i} className="flex items-center justify-between py-3 border-b border-white/[0.04] last:border-0">
+                { key: 'tripReminders' as const, label: 'Trip reminders', desc: 'Get notified before your trips' },
+                { key: 'newFeatures' as const, label: 'New features', desc: 'Updates on new app features' },
+                { key: 'budgetAlerts' as const, label: 'Budget alerts', desc: 'Alert when nearing budget limit' },
+              ].map((item) => (
+                <div key={item.key} className="flex items-center justify-between py-3 border-b border-black/[0.04] last:border-0">
                   <div>
                     <p className="text-sm font-medium">{item.label}</p>
                     <p className="text-xs text-slate-500">{item.desc}</p>
                   </div>
-                  <button className="w-11 h-6 rounded-full bg-amber-500 relative flex-shrink-0">
-                    <div className="w-5 h-5 rounded-full bg-white shadow absolute right-0.5 top-0.5" />
-                  </button>
+                  <Toggle
+                    label={item.label}
+                    on={settings[item.key]}
+                    onChange={(v) => updateSettings({ [item.key]: v })}
+                  />
                 </div>
               ))}
             </div>
@@ -188,20 +211,22 @@ export default function ProfilePage() {
         {activeTab === 'privacy' && (
           <>
             <div>
-              <h3 className="font-semibold mb-3 flex items-center gap-2"><Globe className="w-4 h-4 text-blue-400" /> Data & Privacy</h3>
+              <h3 className="font-semibold mb-3 flex items-center gap-2"><Shield className="w-4 h-4 text-blue-400" /> Data & Privacy</h3>
               <div className="space-y-3">
                 {[
-                  { label: 'Make profile public', desc: 'Others can discover your public trips', on: true },
-                  { label: 'Share analytics', desc: 'Help improve GlobeTrotter anonymously', on: false },
-                ].map((item, i) => (
-                  <div key={i} className="flex items-center justify-between p-3 glass-light rounded-xl">
+                  { key: 'profilePublic' as const, label: 'Make profile public', desc: 'Others can discover your public trips' },
+                  { key: 'shareAnalytics' as const, label: 'Share analytics', desc: 'Help improve GlobeTrotter anonymously' },
+                ].map((item) => (
+                  <div key={item.key} className="flex items-center justify-between p-3 glass-light rounded-xl">
                     <div>
                       <p className="text-sm font-medium">{item.label}</p>
                       <p className="text-xs text-slate-500">{item.desc}</p>
                     </div>
-                    <button className={`w-11 h-6 rounded-full relative flex-shrink-0 transition-colors ${item.on ? 'bg-amber-500' : 'bg-black/5'}`}>
-                      <div className={`w-5 h-5 rounded-full bg-white shadow absolute top-0.5 transition-all ${item.on ? 'right-0.5' : 'left-0.5'}`} />
-                    </button>
+                    <Toggle
+                      label={item.label}
+                      on={settings[item.key]}
+                      onChange={(v) => updateSettings({ [item.key]: v })}
+                    />
                   </div>
                 ))}
               </div>
@@ -210,15 +235,15 @@ export default function ProfilePage() {
             <div>
               <h3 className="font-semibold mb-3 text-red-400 flex items-center gap-2"><Trash2 className="w-4 h-4" /> Danger Zone</h3>
               {!deleteConfirm ? (
-                <button onClick={() => setDeleteConfirm(true)} className="btn-danger">
+                <button type="button" onClick={() => setDeleteConfirm(true)} className="btn-danger">
                   <Trash2 className="w-4 h-4" /> Delete Account
                 </button>
               ) : (
                 <div className="glass-light p-4 rounded-xl border border-red-500/20">
                   <p className="text-sm text-red-400 mb-3 font-medium">Are you sure? This cannot be undone.</p>
                   <div className="flex gap-2">
-                    <button onClick={() => { logout(); }} className="btn-danger flex-1 justify-center">Yes, Delete</button>
-                    <button onClick={() => setDeleteConfirm(false)} className="btn-ghost flex-1 justify-center">Cancel</button>
+                    <button type="button" onClick={() => { logout(); }} className="btn-danger flex-1 justify-center">Yes, Delete</button>
+                    <button type="button" onClick={() => setDeleteConfirm(false)} className="btn-ghost flex-1 justify-center">Cancel</button>
                   </div>
                 </div>
               )}
