@@ -1,0 +1,222 @@
+[
+  {
+    "name": "Paris",
+    "country": "France",
+    "region": "Europe",
+    "cost_index": 4,
+    "popularity": 98,
+    "lat": 48.856614,
+    "lng": 2.352222,
+    "description": "The City of Light, famed for art, fashion, gastronomy, and culture with iconic landmarks like the Eiffel Tower and Louvre.",
+    "image_url": "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=1200&q=80"
+  },
+  {
+    "name": "Rome",
+    "country": "Italy",
+    "region": "Europe",
+    "cost_index": 3,
+    "popularity": 95,
+    "lat": 41.902783,
+    "lng": 12.496366,
+    "description": "The Eternal City, home to nearly three millennia of globally influential art, architecture, and ruins like the Colosseum.",
+    "image_url": "https://images.unsplash.com/photo-1552832230-c0197dd311b5?auto=format&fit=crop&w=1200&q=80"
+  },
+  {
+    "name": "Tokyo",
+    "country": "Japan",
+    "region": "Asia",
+    "cost_index": 4,
+    "popularity": 97,
+    "lat": 35.676192,
+    "lng": 139.650311,
+    "description": "Japan's bustling capital, mixing ultramodern neon skyscrapers with historic temples and world-class culinary scenes.",
+    "image_url": "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=1200&q=80"
+  },
+  {
+    "name": "Kyoto",
+    "country": "Japan",
+    "region": "Asia",
+    "cost_index": 3,
+    "popularity": 91,
+    "lat": 35.011564,
+    "lng": 135.768149,
+    "description": "Former imperial capital famous for numerous classical Buddhist temples, gardens, imperial palaces, and traditional wooden houses.",
+    "image_url": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&q=80"
+  },
+  {
+    "name": "Barcelona",
+    "country": "Spain",
+    "region": "Europe",
+    "cost_index": 3,
+    "popularity": 94,
+    "lat": 41.3874,
+    "lng": 2.1686,
+    "description": "Cosmopolitan Mediterranean city known for its art and architecture, especially Gaudí's fantastical Sagrada Família.",
+    "image_url": "https://images.unsplash.com/photo-1583422409516-2895a77efded?auto=format&fit=crop&w=1200&q=80"
+  },
+  {
+    "name": "London",
+    "country": "United Kingdom",
+    "region": "Europe",
+    "cost_index": 5,
+    "popularity": 96,
+    "lat": 51.507351,
+    "lng": -0.127758,
+    "description": "Historic capital city featuring Big Ben, the London Eye, Buckingham Palace, and world-renowned West End theatre.",
+    "image_url": "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=1200&q=80"
+  },
+  {
+    "name": "Amsterdam",
+    "country": "Netherlands",
+    "region": "Europe",
+    "cost_index": 4,
+    "popularity": 92,
+    "lat": 52.367573,
+    "lng": 4.904139,
+    "description": "Capital of the Netherlands, known for its artistic heritage, elaborate canal system, and narrow houses with gabled facades.",
+    "image_url": "https://images.unsplash.com/photo-1512470876302-972faa2aa9a4?auto=format&fit=crop&w=1200&q=80"
+  },
+  {
+    "name": "New York",
+    "country": "United States",
+    "region": "North America",
+    "cost_index": 5,
+    "popularity": 99,
+    "lat": 40.712775,
+    "lng": -74.005973,
+    "description": "The city that never sleeps, with iconic sights including Times Square, Central Park, Broadway, and the Statue of Liberty.",
+    "image_url": "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?auto=format&fit=crop&w=1200&q=80"
+  },
+  {
+    "name": "San Francisco",
+    "country": "United States",
+    "region": "North America",
+    "cost_index": 5,
+    "popularity": 89,
+    "lat": 37.774929,
+    "lng": -122.419416,
+    "description": "Famous for the Golden Gate Bridge, historic cable cars, colorful Victorian houses, and vibrant tech culture.",
+    "image_url": "https://images.unsplash.com/photo-1501594907352-04cda38ebc29?auto=format&fit=crop&w=1200&q=80"
+  },
+  {
+    "name": "Bangkok",
+    "country": "Thailand",
+    "region": "Asia",
+    "cost_index": 2,
+    "popularity": 93,
+    "lat": 13.756331,
+    "lng": 100.501765,
+    "description": "Thailand’s capital, large city known for ornate shrines, lively street food culture, and the bustling Chao Phraya River.",
+    "image_url": "https://images.unsplash.com/photo-1508009603885-50cf7c579365?auto=format&fit=crop&w=1200&q=80"
+  },
+  {
+    "name": "Bali (Denpasar)",
+    "country": "Indonesia",
+    "region": "Asia",
+    "cost_index": 2,
+    "popularity": 94,
+    "lat": -8.409518,
+    "lng": 115.188916,
+    "description": "Indonesian paradise island known for forested volcanic mountains, iconic rice paddies, beaches, and coral reefs.",
+    "image_url": "https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=1200&q=80"
+  },
+  {
+    "name": "Singapore",
+    "country": "Singapore",
+    "region": "Asia",
+    "cost_index": 4,
+    "popularity": 92,
+    "lat": 1.352083,
+    "lng": 103.819836,
+    "description": "Global financial hub known for tropical climate, futuristic Gardens by the Bay, diverse food hawker centers, and Marina Bay.",
+    "image_url": "https://images.unsplash.com/photo-1525625293386-3f8f99389edd?auto=format&fit=crop&w=1200&q=80"
+  },
+  {
+    "name": "Dubai",
+    "country": "United Arab Emirates",
+    "region": "Middle East",
+    "cost_index": 5,
+    "popularity": 96,
+    "lat": 25.204849,
+    "lng": 55.270783,
+    "description": "City of superlative architecture, luxury shopping, desert safaris, and the world's tallest building, Burj Khalifa.",
+    "image_url": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&q=80"
+  },
+  {
+    "name": "Sydney",
+    "country": "Australia",
+    "region": "Oceania",
+    "cost_index": 4,
+    "popularity": 90,
+    "lat": -33.86882,
+    "lng": 151.209296,
+    "description": "Australia's harbor city featuring the iconic Opera House, Harbour Bridge, Bondi Beach, and coastal walks.",
+    "image_url": "https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?auto=format&fit=crop&w=1200&q=80"
+  },
+  {
+    "name": "Prague",
+    "country": "Czech Republic",
+    "region": "Europe",
+    "cost_index": 2,
+    "popularity": 88,
+    "lat": 50.075538,
+    "lng": 14.4378,
+    "description": "The City of a Hundred Spires, known for its Old Town Square, colorful baroque buildings, Gothic churches, and Charles Bridge.",
+    "image_url": "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?auto=format&fit=crop&w=1200&q=80"
+  },
+  {
+    "name": "Vienna",
+    "country": "Austria",
+    "region": "Europe",
+    "cost_index": 3,
+    "popularity": 89,
+    "lat": 48.208174,
+    "lng": 16.373819,
+    "description": "Austria’s capital on the Danube river, shaped by its artistic and intellectual legacy including Mozart, Beethoven, and Freud.",
+    "image_url": "https://images.unsplash.com/photo-1516550893923-42d28e5677af?auto=format&fit=crop&w=1200&q=80"
+  },
+  {
+    "name": "Istanbul",
+    "country": "Turkey",
+    "region": "Europe / Asia",
+    "cost_index": 2,
+    "popularity": 93,
+    "lat": 41.008238,
+    "lng": 28.978359,
+    "description": "Historic crossroads where Europe meets Asia, featuring the Hagia Sophia, Blue Mosque, Grand Bazaar, and Bosphorus Strait.",
+    "image_url": "https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?auto=format&fit=crop&w=1200&q=80"
+  },
+  {
+    "name": "Florence",
+    "country": "Italy",
+    "region": "Europe",
+    "cost_index": 3,
+    "popularity": 92,
+    "lat": 43.76956,
+    "lng": 11.255814,
+    "description": "Birthplace of the Renaissance, celebrated for its masterworks of art and architecture including the Duomo and Uffizi Gallery.",
+    "image_url": "https://images.unsplash.com/photo-1543429776-2782fc8e1acd?auto=format&fit=crop&w=1200&q=80"
+  },
+  {
+    "name": "Venice",
+    "country": "Italy",
+    "region": "Europe",
+    "cost_index": 4,
+    "popularity": 94,
+    "lat": 45.440847,
+    "lng": 12.315515,
+    "description": "Built on more than 100 small islands in a lagoon, famous for gondola rides, St. Mark's Basilica, and Piazza San Marco.",
+    "image_url": "https://images.unsplash.com/photo-1514890547357-a9ee288728e0?auto=format&fit=crop&w=1200&q=80"
+  },
+  {
+    "name": "Santorini",
+    "country": "Greece",
+    "region": "Europe",
+    "cost_index": 4,
+    "popularity": 95,
+    "lat": 36.393156,
+    "lng": 25.461509,
+    "description": "Cyclades island in the Aegean Sea, devastated by a 16th-century BC volcanic eruption, featuring white-washed cliffside villages.",
+    "image_url": "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?auto=format&fit=crop&w=1200&q=80"
+  }
+]
