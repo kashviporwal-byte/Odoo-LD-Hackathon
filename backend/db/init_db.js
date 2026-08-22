@@ -1,6 +1,7 @@
+require('dotenv').config();
 const { Client } = require('pg');
-// Default credentials connecting to postgres default db
-const client = new Client('postgresql://postgres:postgres@localhost:5432/postgres');
+const dbUrl = process.env.DATABASE_URL ? process.env.DATABASE_URL.replace(/\/globetrotter$/, '/postgres') : 'postgresql://postgres:1234@localhost:5432/postgres';
+const client = new Client(dbUrl);
 
 async function init() {
   try {

@@ -218,5 +218,60 @@
     "lng": 25.461509,
     "description": "Cyclades island in the Aegean Sea, devastated by a 16th-century BC volcanic eruption, featuring white-washed cliffside villages.",
     "image_url": "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?auto=format&fit=crop&w=1200&q=80"
+  },
+  {
+    "name": "Cairo",
+    "country": "Egypt",
+    "region": "Africa",
+    "cost_index": 2,
+    "popularity": 92,
+    "lat": 30.04442,
+    "lng": 31.235712,
+    "description": "Egypt's sprawling capital along the Nile, home to the iconic Giza Pyramids and Great Sphinx dating back to the 26th century BC.",
+    "image_url": "https://images.unsplash.com/photo-1572252009286-268acec510d2?auto=format&fit=crop&w=1200&q=80"
+  },
+  {
+    "name": "Rio de Janeiro",
+    "country": "Brazil",
+    "region": "South America",
+    "cost_index": 3,
+    "popularity": 91,
+    "lat": -22.906847,
+    "lng": -43.172896,
+    "description": "Huge seaside city famed for Copacabana and Ipanema beaches, Christ the Redeemer statue atop Mount Corcovado, and Sugarloaf Mountain.",
+    "image_url": "https://images.unsplash.com/photo-1483729558449-99ef09a8c325?auto=format&fit=crop&w=1200&q=80"
+  },
+  {
+    "name": "Cape Town",
+    "country": "South Africa",
+    "region": "Africa",
+    "cost_index": 2,
+    "popularity": 89,
+    "lat": -33.924869,
+    "lng": 18.424055,
+    "description": "Port city beneath towering Table Mountain, known for penguin colonies, dramatic coastal drives along Chapman's Peak, and wineries.",
+    "image_url": "https://images.unsplash.com/photo-1580618672591-eb180b1a973f?auto=format&fit=crop&w=1200&q=80"
+  },
+  {
+    "name": "Zurich",
+    "country": "Switzerland",
+    "region": "Europe",
+    "cost_index": 5,
+    "popularity": 90,
+    "lat": 47.376887,
+    "lng": 8.541694,
+    "description": "Global hub for finance and banking, situated at the north end of Lake Zurich with picturesque medieval Altstadt and alpine scenery.",
+    "image_url": "https://images.unsplash.com/photo-1515488764276-beab7607c1e6?auto=format&fit=crop&w=1200&q=80"
+  },
+  {
+    "name": "Reykjavik",
+    "country": "Iceland",
+    "region": "Europe",
+    "cost_index": 5,
+    "popularity": 93,
+    "lat": 64.146582,
+    "lng": -21.942635,
+    "description": "Coastal capital known for geothermal Blue Lagoon spas, the Golden Circle route of geysers and waterfalls, and vibrant Northern Lights.",
+    "image_url": "https://images.unsplash.com/photo-1504893524553-b855bce32c67?auto=format&fit=crop&w=1200&q=80"
   }
 ]
